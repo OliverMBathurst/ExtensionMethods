@@ -24,10 +24,7 @@ namespace ExtensionMethods.GenericExtensionMethods
             }
         }
 
-        public static T IfNullThen<T>(this T original, T replacement)
-        {
-            return original ?? replacement;
-        }
+        public static T IfNullThen<T>(this T original, T replacement) => original ?? replacement;        
 
         public static void IfNotNull<T>(this T obj, Action<T> action)
         {
@@ -41,6 +38,16 @@ namespace ExtensionMethods.GenericExtensionMethods
         {
             if (obj == null) return true;
             var type = typeof(T);
+            if (Nullable.GetUnderlyingType(type) != null || !type.IsValueType)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool IsNullable<T>(this Type type)
+        {
+            if (type == null) return true;
             if (Nullable.GetUnderlyingType(type) != null || !type.IsValueType)
             {
                 return true;
@@ -97,6 +104,20 @@ namespace ExtensionMethods.GenericExtensionMethods
             return (T)bf.Deserialize(stream);
         }
 
-        public static T Parse<T>(this object obj) => obj == null ? default : (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(obj);
+        public static T Parse<T>(this T obj) => obj == null ? default : (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(obj);
+
+        public static void TryDispose<T>(this T obj, bool throwException = false)
+        {
+            if (!(obj is IDisposable disposable)) return;
+            try { disposable.Dispose(); } catch (Exception e) { if (throwException) throw e; }
+        }
+
+        public static T DefaultIfNull<T>(this T obj) => obj ?? default;
+
+        public static object NullIfDefault<T>(this T obj) => obj == default ? (object)null : obj;
+
+        public static object Box<T>(this T obj) => (object)obj;
+
+        public static T Unbox<T>(this object obj) => (T)obj;
     }
 }

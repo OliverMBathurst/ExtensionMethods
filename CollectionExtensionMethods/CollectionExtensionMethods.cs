@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExtensionMethods.GenericExtensionMethods;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,6 +7,14 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 {
     public static class CollectionExtensionMethods
     {
+        public static object FirstOrNull<T>(this ICollection<T> collection, Func<T, bool> func)
+        {
+            if (!typeof(T).IsNullable()) throw new NotNullableException();
+
+            var firstOrDefault = collection.FirstOrDefault(func);
+            return firstOrDefault == default ? null : firstOrDefault.Box();
+        }
+
         public static bool All<T>(this ICollection<T> collection, Func<T, bool> predicate)
         {
             var enumerator = collection.GetEnumerator();
@@ -32,77 +41,49 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             return false;
         }
 
-        public static bool IsNullOrEmpty<T>(this ICollection<T> collection)
-        {
-            if (collection == null || collection.Count == 0)
-            {
-                return true;
-            }
-            return false;
-        }
+        public static bool IsNullOrEmpty<T>(this ICollection<T> collection) => collection == null || collection.Count == 0 ? true : false;
 
-        public static void Shuffle<T>(this ICollection<T> collection)
+        public static IEnumerable<T> Shuffle<T>(this ICollection<T> collection)
         {
             var r = new Random();
-            collection = collection.OrderBy(t => r.Next()).ToList();
+            return collection.OrderBy(t => r.Next());
         }
 
-        public static bool IsUnique<T>(this ICollection<T> collection)
+        public static bool IsDistinct<T>(this ICollection<T> collection)
         {
             var hashSet = new HashSet<T>();
             return collection.All(hashSet.Add);
         }
 
-        public static ICollection<T> Add<T>(this ICollection<T> collection, T item)
+        public static ICollection<T> ChainableAdd<T>(this ICollection<T> collection, T item)
         {
             collection.Add(item);
             return collection;
         }
 
-        public static ICollection<T> BetweenValues<T>(this ICollection<T> collection, T lowerValue, T upperValue) where T : IComparable<T>
+        public static IEnumerable<T> BetweenValues<T>(this ICollection<T> collection, T lowerValue, T upperValue) where T : IComparable<T>
         {
-            var list = new List<T>();
-            var enumerator = collection.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                var current = enumerator.Current;
-                if (current.CompareTo(upperValue) < 0 && current.CompareTo(lowerValue) > 0)
-                {
-                    list.Add(current);
-                }
-            }
-            return list;
+            return collection.Where(x => x.CompareTo(upperValue) < 0 && x.CompareTo(lowerValue) > 0);
         }
 
-        public static ICollection<T> BetweenValuesInclusive<T>(this ICollection<T> collection, T lowerValue, T upperValue) where T : IComparable<T>
+        public static IEnumerable<T> BetweenValuesInclusive<T>(this ICollection<T> collection, T lowerValue, T upperValue) where T : IComparable<T>
         {
-            var list = new List<T>();
-            var enumerator = collection.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                var current = enumerator.Current;
-                if (current.CompareTo(upperValue) <= 0 && current.CompareTo(lowerValue) >= 0)
-                {
-                    list.Add(current);
-                }
-            }
-            return list;
+            return collection.Where(x => x.CompareTo(upperValue) <= 0 && x.CompareTo(lowerValue) >= 0);
         }
 
-        public static void RemoveWhile<T>(this ICollection<T> collection, Func<T, bool> predicate)
+        public static IEnumerable<T> RemoveWhile<T>(this ICollection<T> collection, Func<T, bool> predicate)
         {
+            var count = 0;
             var enumerator = collection.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                if (predicate(enumerator.Current))
+                if (!predicate(enumerator.Current))
                 {
-                    collection.Remove(enumerator.Current);
+                    break;
                 }
-                else
-                {
-                    return;
-                }
+                count++;
             }
+            return collection.Skip(count);
         }
 
         public static ICollection<int> AllIndexesOf<T>(this ICollection<T> collection, T item) where T : IComparable<T>

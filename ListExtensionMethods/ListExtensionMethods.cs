@@ -5,6 +5,11 @@ namespace ExtensionMethods.ListExtensionMethods
 {
     public static class ListExtensionMethods
     {
+        public static IList<T> ChainableAdd<T>(this IList<T> list, T item)
+        {
+            list.Add(item);
+            return list;
+        }
         public static bool AreAllTheSame<T>(this IList<T> list) where T : IComparable<T>
         {            
             if(list == null)

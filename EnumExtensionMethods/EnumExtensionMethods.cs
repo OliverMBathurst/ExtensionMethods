@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExtensionMethods.EnumerableExtensionMethods;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -23,16 +24,7 @@ namespace ExtensionMethods.EnumExtensionMethods
 
         public static bool HasDescription<TEnum>(this TEnum _) where TEnum : Enum
         {
-            var attributes = typeof(TEnum).CustomAttributes;
-            var enumerator = attributes.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                if(enumerator.Current.AttributeType == typeof(DescriptionAttribute))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return typeof(TEnum).CustomAttributes.FirstOrNull(x => x.AttributeType == typeof(DescriptionAttribute)) != null;
         }
     }
 }
