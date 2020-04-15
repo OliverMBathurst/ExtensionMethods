@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -89,11 +90,13 @@ namespace ExtensionMethods.GenericExtensionMethods
             {
                 return default;
             }
-            var bf = new BinaryFormatter();
             using var stream = new MemoryStream();
+            var bf = new BinaryFormatter();
             bf.Serialize(stream, obj);
-            stream.Seek(0, SeekOrigin.Begin);
+            stream.Position = 0;
             return (T)bf.Deserialize(stream);
         }
+
+        public static T Parse<T>(this object obj) => obj == null ? default : (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(obj);
     }
 }

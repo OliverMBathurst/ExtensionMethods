@@ -33,20 +33,15 @@ namespace ExtensionMethods.ListExtensionMethods
             {
                 throw new ArgumentNullException(nameof(item));
             }
-            var hasAdded = false;
             for (var i = 0; i < list.Count; i++)
             {
                 if (item.CompareTo(list[i]) < 0)
                 {
                     list.Insert(i, item);
-                    hasAdded = true;
-                    break;
+                    return;
                 }
             }
-            if (!hasAdded)
-            {
-                list.Add(item);
-            }
+            list.Add(item);
         }
 
         public static void InsertSorted<T>(this IList<T> list, T item, Comparison<T> comparison) where T : IComparable<T>
@@ -55,20 +50,15 @@ namespace ExtensionMethods.ListExtensionMethods
             {
                 throw new ArgumentNullException(nameof(item));
             }
-            var hasAdded = false;
             for (var i = 0; i < list.Count; i++)
             {
                 if (comparison(item, list[i]) < 0)
                 {
                     list.Insert(i, item);
-                    hasAdded = true;
-                    break;
+                    return;
                 }
-            }
-            if (!hasAdded)
-            {
-                list.Add(item);
-            }
+            }            
+            list.Add(item);            
         }
 
         public static void InsertSorted<T>(this IList<T> list, T item, IComparer<T> comparer) where T : IComparable<T>
@@ -77,20 +67,15 @@ namespace ExtensionMethods.ListExtensionMethods
             {
                 throw new ArgumentNullException(nameof(item));
             }
-            var hasAdded = false;
             for (var i = 0; i < list.Count; i++)
             {
                 if (comparer.Compare(item, list[i]) < 0)
                 {
                     list.Insert(i, item);
-                    hasAdded = true;
-                    break;
+                    return;
                 }
-            }
-            if (!hasAdded)
-            {
-                list.Add(item);
-            }
+            }            
+            list.Add(item);            
         }
     }
 }

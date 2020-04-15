@@ -100,9 +100,56 @@ namespace ExtensionMethods.EnumerableExtensionMethods
                 }
                 else
                 {
-                    break;
+                    return;
                 }
             }
         }
+
+        public static ICollection<int> AllIndexesOf<T>(this ICollection<T> collection, T item) where T : IComparable<T>
+        {
+            var indexes = new List<int>();
+            var enumerator = collection.GetEnumerator();
+            var index = 0;
+            while (enumerator.MoveNext())
+            {
+                if(enumerator.Current.CompareTo(item) == 0)
+                {
+                    indexes.Add(index);
+                }
+                index++;
+            }
+
+            return indexes;
+        }
+
+        public static T Get<T>(this ICollection<T> collection, int index)
+        {
+            var i = 0;
+            var enumerator = collection.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if(i == index)
+                {
+                    return enumerator.Current;
+                }
+                i++;
+            }
+            return default;
+        }
+
+        public static T Get<T>(this ICollection<T> collection, T item) where T : IComparable<T>
+        {
+            var enumerator = collection.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if(enumerator.Current.CompareTo(item) == 0)
+                {
+                    return enumerator.Current;
+                }
+            }
+            return default;
+        }
+
+        public static bool Remove<T>(this ICollection<T> collection, int index) => collection.Remove(Get(collection, index));
     }
 }
