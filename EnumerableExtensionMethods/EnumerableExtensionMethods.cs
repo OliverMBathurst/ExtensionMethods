@@ -1,4 +1,5 @@
 ﻿using ExtensionMethods.GenericExtensionMethods;
+using ExtensionMethods.ListExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,12 +59,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static ICollection<T> ToCollection<T>(this IEnumerable<T> enumerable) => (ICollection<T>)enumerable;
 
-        public static IEnumerable<T> ChainableAdd<T>(this IEnumerable<T> enumerable, T item)
-        {
-            var list = enumerable.ToList();
-            list.Add(item);
-            return list;
-        }
+        public static IEnumerable<T> ChainableAdd<T>(this IEnumerable<T> enumerable, T item) => enumerable.ToList().ChainableAdd(item);
 
         public static IEnumerable<T> BetweenValues<T>(this IEnumerable<T> enumerable, T lowerValue, T upperValue) where T : IComparable<T>
         {
@@ -107,20 +103,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             return indexes;
         }
 
-        public static T Get<T>(this IEnumerable<T> enumerable, int index)
-        {
-            var i = 0;
-            var enumerator = enumerable.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                if (i == index)
-                {
-                    return enumerator.Current;
-                }
-                i++;
-            }
-            return default;
-        }
+        public static T Get<T>(this IEnumerable<T> enumerable, int index) => enumerable.ElementAt(index);
 
         public static T Get<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T>
         {
@@ -134,33 +117,48 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static IEnumerable<T> Remove<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T>
         {
-            var list = new List<T>();
-            var hasExcluded = false;
-            var enumerator = enumerable.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                if(!hasExcluded && enumerator.Current.CompareTo(item) == 0)
-                {
-                    hasExcluded = true;
-                }
-                else
-                {
-                    list.Add(enumerator.Current);
-                }                
-            }
-            return list;
+            return enumerable.ToList().ChainableRemove(item);
         }
 
-        public static IEnumerable<T> Remove<T>(this IEnumerable<T> enumerable, int index)
-        {
-            var list = enumerable.ToList();
-            list.RemoveAt(index);
-            return list;
-        }
+        public static IEnumerable<T> Remove<T>(this IEnumerable<T> enumerable, int index) => enumerable.ToList().ChainableRemoveAt(index);
 
         public static IEnumerable<T> RemoveAll<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T>
         {
             return enumerable.Where(x => x.CompareTo(item) != 0);
         }
+
+        public static IEnumerable<T> RemoveAll<T>(this IEnumerable<T> enumerable, Func<T, bool> func)
+        {
+            var list = new List<T>();
+            var enumerator = enumerable.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (!func(enumerator.Current))
+                {
+                    list.Add(enumerator.Current);
+                }
+            }
+            return list;
+        }
+
+        public static IEnumerable<T> ReplaceAll<T>(this IEnumerable<T> enumerable, Func<T, bool> func, T item)
+        {
+            var list = new List<T>();
+            var enumerator = enumerable.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (func(enumerator.Current))
+                {
+                    list.Add(item);
+                }
+                else
+                {
+                    list.Add(enumerator.Current);
+                }
+            }
+            return list;
+        }
+
+        public static T Random<T>(this IEnumerable<T> enumerable) => enumerable.ElementAt(new Random().Next(enumerable.Count() - 1));
     }
 }

@@ -10,6 +10,19 @@ namespace ExtensionMethods.ListExtensionMethods
             list.Add(item);
             return list;
         }
+
+        public static IList<T> ChainableRemoveAt<T>(this IList<T> list, int index)
+        {
+            list.RemoveAt(index);
+            return list;
+        }
+
+        public static IList<T> ChainableRemove<T>(this IList<T> list, T item)
+        {
+            list.Remove(item);
+            return list;
+        }
+
         public static bool AreAllTheSame<T>(this IList<T> list) where T : IComparable<T>
         {            
             if(list == null)

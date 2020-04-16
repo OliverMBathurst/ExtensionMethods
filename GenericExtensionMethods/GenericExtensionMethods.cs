@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ExtensionMethods.GenericExtensionMethods
@@ -59,6 +60,8 @@ namespace ExtensionMethods.GenericExtensionMethods
 
         public static bool IsIn<T>(this T obj, ICollection<T> collection) => collection.Contains(obj);
 
+        public static bool IsIn<T>(this T obj, IEnumerable<T> enumerable) => enumerable.Contains(obj);
+
         public static void ThrowIf<T>(this T obj, Func<T, bool> func)
         {
             if (func(obj))
@@ -115,6 +118,8 @@ namespace ExtensionMethods.GenericExtensionMethods
         public static T DefaultIfNull<T>(this T obj) => obj ?? default;
 
         public static object NullIfDefault<T>(this T obj) => obj == default ? (object)null : obj;
+
+        public static bool IsDefault<T>(this T obj) => obj == default;
 
         public static object Box<T>(this T obj) => (object)obj;
 

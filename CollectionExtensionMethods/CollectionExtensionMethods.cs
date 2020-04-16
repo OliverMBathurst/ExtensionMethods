@@ -103,20 +103,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             return indexes;
         }
 
-        public static T Get<T>(this ICollection<T> collection, int index)
-        {
-            var i = 0;
-            var enumerator = collection.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                if(i == index)
-                {
-                    return enumerator.Current;
-                }
-                i++;
-            }
-            return default;
-        }
+        public static T Get<T>(this ICollection<T> collection, int index) => collection.ElementAt(index);
 
         public static T Get<T>(this ICollection<T> collection, T item) where T : IComparable<T>
         {
@@ -132,5 +119,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         }
 
         public static bool Remove<T>(this ICollection<T> collection, int index) => collection.Remove(Get(collection, index));
+
+        public static T Random<T>(this ICollection<T> collection) => collection.ElementAt(new Random().Next(collection.Count() - 1));
     }
 }
