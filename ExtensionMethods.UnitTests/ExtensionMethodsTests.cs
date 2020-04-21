@@ -1,4 +1,8 @@
 ﻿using System;
+using ExtensionMethods.StringExtensionMethods;
+using ExtensionMethods.GenericExtensionMethods;
+using ExtensionMethods.EnumerableExtensionMethods;
+using ExtensionMethods.BooleanExtensionMethods;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -37,7 +41,7 @@ namespace ExtensionMethods.UnitTests
         public void IfASubstringIsCalledWithAStartAndEndIndex_AValidSubstringShouldBeReturned()
         {
             var result = "teststring".SubString(0, 4);
-            Assert.IsTrue(result != null && result == "tests");
+            Assert.IsTrue(result != null && result == "test");
         }
 
         [TestMethod]
@@ -356,10 +360,23 @@ namespace ExtensionMethods.UnitTests
             Assert.AreEqual(integer, 123);
         }
 
-        [TestMethod, ExpectedException(typeof(NotSupportedException))]
+        [TestMethod]
         public void IfParseIsCalledWithAnObjectThatCannotBeParsed_ItShouldThrowAnException()
         {
-            "1q2d3".Parse<string, int>();
+            var passed = false;
+            try
+            {
+                "1q2d3".Parse<string, int>();
+            }
+            catch(Exception ex)
+            {
+                if(ex.InnerException.GetType() == typeof(FormatException))
+                {
+                    passed = true;
+                }
+            }
+            if (!passed)
+                Assert.Fail();
         }
 
         [TestMethod]
@@ -373,27 +390,27 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfNullIfDefaultIsCalledOnADefaultObject_ItShouldReturnANullObject()
         {
-            Assert.AreEqual(null, default(int).NullIfDefault());
+            Assert.AreEqual(null, default(TestType).NullIfDefault());
         }
 
         [TestMethod]
         public void IfNullIfDefaultIsCalledOnANonDefaultObject_ItShouldReturnTheObject()
         {
-            const int test = 6;
+            var test = new TestType { TestProperty = true };
             Assert.AreEqual(test, test.NullIfDefault());
         }
 
         [TestMethod]
         public void IfIsDefaultIsCalledOnANonDefaultObject_ItShouldReturnFalse()
         {
-            const int test = 6;
+            var test = new TestType { TestProperty = true };
             Assert.IsFalse(test.IsDefault());
         }
 
         [TestMethod]
         public void IfIsDefaultIsCalledOnADefaultObject_ItShouldReturnTrue()
         {
-            Assert.IsTrue(default(int).IsDefault());
+            Assert.IsTrue(default(TestType).IsDefault());
         }
 
         [TestMethod]

@@ -5,7 +5,7 @@ namespace ExtensionMethods.StringExtensionMethods
 {
     public static class StringExtensionMethods
     {
-        public static string SubString(this string str, int startIndex, int endIndex) => str.SubString(startIndex, endIndex - startIndex);
+        public static string SubString(this string str, int startIndex, int endIndex) => str.Substring(startIndex, endIndex - startIndex);
         
         public static long? ToLong(this string str) => long.TryParse(str, out long result) ? result : new long?();
 
