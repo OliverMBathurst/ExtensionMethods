@@ -9,8 +9,8 @@ namespace ExtensionMethods.BooleanExtensionMethods
             return value.CompareTo(value1) == 0;
         }
 
-        public static bool Or<T>(this bool value, bool value1) => value || value1;
+        public static bool Or(this bool value, bool value1) => value || value1;
 
-        public static bool And<T>(this bool value, bool value1) => value && value1;
+        public static bool And(this bool value, bool value1) => value && value1;
     }
 }

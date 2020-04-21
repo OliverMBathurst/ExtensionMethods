@@ -7,6 +7,12 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 {
     public static class CollectionExtensionMethods
     {
+        public static ICollection<T> WherePrevious<T>(this ICollection<T> collection, Func<T, bool> func) =>
+            collection.Zip(collection.Skip(1), (previous, current) => new { previous, current })
+                .Where(x => func(x.previous))
+                .Select(z => z.current)
+                .ToCollection();
+
         public static object FirstOrNull<T>(this ICollection<T> collection, Func<T, bool> func)
         {
             if (!typeof(T).IsNullable()) throw new NotNullableException();

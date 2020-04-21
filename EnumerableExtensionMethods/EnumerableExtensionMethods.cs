@@ -8,6 +8,11 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 {
     public static class EnumerableExtensionMethods
     {
+        public static IEnumerable<T> WherePrevious<T>(this IEnumerable<T> enumerable, Func<T, bool> func) =>
+            enumerable.Zip(enumerable.Skip(1), (previous, current) => new { previous, current })
+                .Where(x => func(x.previous))
+                .Select(z => z.current);
+
         public static object FirstOrNull<T>(this IEnumerable<T> enumerable, Func<T, bool> func)
         {
             if (!typeof(T).IsNullable()) throw new NotNullableException();

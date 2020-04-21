@@ -25,10 +25,8 @@ namespace ExtensionMethods.GenericExtensionMethods
             }
         }
 
-        public static T IfNullThen<T>(this T original, T replacement) => original ?? replacement;        
-
         public static void IfNotNull<T>(this T obj, Action<T> action)
-        {
+        {            
             if(obj != null)
             {
                 action(obj);
@@ -59,6 +57,8 @@ namespace ExtensionMethods.GenericExtensionMethods
         public static bool IsNull<T>(this T obj) => obj == null;
 
         public static bool IsIn<T>(this T obj, ICollection<T> collection) => collection.Contains(obj);
+
+        public static bool IsIn<T>(this T obj, params T[] array) => array.Contains(obj);
 
         public static bool IsIn<T>(this T obj, IEnumerable<T> enumerable) => enumerable.Contains(obj);
 
@@ -107,15 +107,13 @@ namespace ExtensionMethods.GenericExtensionMethods
             return (T)bf.Deserialize(stream);
         }
 
-        public static T Parse<T>(this T obj) => obj == null ? default : (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(obj);
+        public static C Parse<T, C>(this T obj) => (C)TypeDescriptor.GetConverter(typeof(C)).ConvertFrom(obj);
 
         public static void TryDispose<T>(this T obj, bool throwException = false)
         {
             if (!(obj is IDisposable disposable)) return;
             try { disposable.Dispose(); } catch (Exception e) { if (throwException) throw e; }
         }
-
-        public static T DefaultIfNull<T>(this T obj) => obj ?? default;
 
         public static object NullIfDefault<T>(this T obj) => obj == default ? (object)null : obj;
 
