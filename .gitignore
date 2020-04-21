@@ -16,14 +16,12 @@
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
-[Rr]elease/
 [Rr]eleases/
 x64/
 x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-[Bb]in/
 [Oo]bj/
 [Ll]og/
 
@@ -338,3 +336,13 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+ExtensionMethods.UnitTests/bin/Release/ExtensionMethods.UnitTests.dll
+ExtensionMethods.UnitTests/bin/Release/ExtensionMethods.dll
+ExtensionMethods.UnitTests/bin/Release/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+ExtensionMethods.UnitTests/bin/Release/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+ExtensionMethods.UnitTests/bin/Release/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+ExtensionMethods.UnitTests/bin/Release/Microsoft.VisualStudio.TestPlatform.TestFramework.dll
+ExtensionMethods.UnitTests/bin/Release/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll
+ExtensionMethods.UnitTests/bin/Release/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml
+ExtensionMethods.UnitTests/bin/Release/Microsoft.VisualStudio.TestPlatform.TestFramework.xml
+ExtensionMethods/bin/Release/netstandard2.0/ExtensionMethods.deps.json

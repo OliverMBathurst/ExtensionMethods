@@ -5,5 +5,4 @@
     <AssemblyOriginatorKeyFile>keyfile.pfx</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
   </PropertyGroup>
-
 </Project>
