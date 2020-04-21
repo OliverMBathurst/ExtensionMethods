@@ -13,7 +13,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
                 .Select(z => z.current)
                 .ToCollection();
 
-        public static object FirstOrNull<T>(this ICollection<T> collection, Func<T, bool> func)
+        public static object FirstOrNull<T>(this ICollection<T> collection, Func<T, bool> func) where T: class
         {
             if (!typeof(T).IsNullable()) throw new NotNullableException();
 
@@ -67,15 +67,9 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             return collection;
         }
 
-        public static IEnumerable<T> BetweenValues<T>(this ICollection<T> collection, T lowerValue, T upperValue) where T : IComparable<T>
-        {
-            return collection.Where(x => x.CompareTo(upperValue) < 0 && x.CompareTo(lowerValue) > 0);
-        }
+        public static IEnumerable<T> BetweenValues<T>(this ICollection<T> collection, T lowerValue, T upperValue) where T : IComparable<T> => collection.Where(x => x.CompareTo(upperValue) < 0 && x.CompareTo(lowerValue) > 0);
 
-        public static IEnumerable<T> BetweenValuesInclusive<T>(this ICollection<T> collection, T lowerValue, T upperValue) where T : IComparable<T>
-        {
-            return collection.Where(x => x.CompareTo(upperValue) <= 0 && x.CompareTo(lowerValue) >= 0);
-        }
+        public static IEnumerable<T> BetweenValuesInclusive<T>(this ICollection<T> collection, T lowerValue, T upperValue) where T : IComparable<T> => collection.Where(x => x.CompareTo(upperValue) <= 0 && x.CompareTo(lowerValue) >= 0);
 
         public static IEnumerable<T> RemoveWhile<T>(this ICollection<T> collection, Func<T, bool> predicate)
         {

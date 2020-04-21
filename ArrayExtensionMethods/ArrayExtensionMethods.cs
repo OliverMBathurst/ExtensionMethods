@@ -18,7 +18,7 @@ namespace ExtensionMethods.ArrayExtensionMethods
                 {
                     array[i] = array[i + 1];
                 }
-                array[^1] = tmp;
+                array[array.Length - 1] = tmp;
             }            
         }
 
@@ -31,7 +31,7 @@ namespace ExtensionMethods.ArrayExtensionMethods
 
             if (array.Length > 1)
             {
-                var tmp = array[^1];
+                var tmp = array[array.Length - 1];
                 for (var i = array.Length - 1; i <= 1; i++)
                 {
                     array[i] = array[i - 1];
@@ -93,7 +93,7 @@ namespace ExtensionMethods.ArrayExtensionMethods
 
             if (!hasFoundIndex)
             {
-                arr[^1] = item;
+                arr[arr.Length - 1] = item;
             }
 
             return arr;

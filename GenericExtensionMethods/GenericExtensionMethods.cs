@@ -100,11 +100,13 @@ namespace ExtensionMethods.GenericExtensionMethods
             {
                 return default;
             }
-            using var stream = new MemoryStream();
+            var stream = new MemoryStream();
             var bf = new BinaryFormatter();
             bf.Serialize(stream, obj);
             stream.Position = 0;
-            return (T)bf.Deserialize(stream);
+            var result = (T)bf.Deserialize(stream);
+            stream.Close();
+            return result;
         }
 
         public static C Parse<T, C>(this T obj) => (C)TypeDescriptor.GetConverter(typeof(C)).ConvertFrom(obj);
@@ -115,9 +117,9 @@ namespace ExtensionMethods.GenericExtensionMethods
             try { disposable.Dispose(); } catch (Exception e) { if (throwException) throw e; }
         }
 
-        public static object NullIfDefault<T>(this T obj) => obj == default ? (object)null : obj;
+        public static object NullIfDefault<T>(this T obj) where T: class => obj == default ? (object)null : obj;
 
-        public static bool IsDefault<T>(this T obj) => obj == default;
+        public static bool IsDefault<T>(this T obj) where T: class => obj == default;
 
         public static object Box<T>(this T obj) => (object)obj;
 

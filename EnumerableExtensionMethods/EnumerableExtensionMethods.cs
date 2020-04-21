@@ -13,7 +13,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
                 .Where(x => func(x.previous))
                 .Select(z => z.current);
 
-        public static object FirstOrNull<T>(this IEnumerable<T> enumerable, Func<T, bool> func)
+        public static object FirstOrNull<T>(this IEnumerable<T> enumerable, Func<T, bool> func) where T : class
         {
             if (!typeof(T).IsNullable()) throw new NotNullableException();
 
@@ -66,15 +66,9 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static IEnumerable<T> ChainableAdd<T>(this IEnumerable<T> enumerable, T item) => enumerable.ToList().ChainableAdd(item);
 
-        public static IEnumerable<T> BetweenValues<T>(this IEnumerable<T> enumerable, T lowerValue, T upperValue) where T : IComparable<T>
-        {
-            return enumerable.Where(x => x.CompareTo(upperValue) < 0 && x.CompareTo(lowerValue) > 0);
-        }
+        public static IEnumerable<T> BetweenValues<T>(this IEnumerable<T> enumerable, T lowerValue, T upperValue) where T : IComparable<T> => enumerable.Where(x => x.CompareTo(upperValue) < 0 && x.CompareTo(lowerValue) > 0);
 
-        public static IEnumerable<T> BetweenValuesInclusive<T>(this IEnumerable<T> enumerable, T lowerValue, T upperValue) where T : IComparable<T>
-        {
-            return enumerable.Where(x => x.CompareTo(upperValue) <= 0 && x.CompareTo(lowerValue) >= 0);
-        }
+        public static IEnumerable<T> BetweenValuesInclusive<T>(this IEnumerable<T> enumerable, T lowerValue, T upperValue) where T : IComparable<T> => enumerable.Where(x => x.CompareTo(upperValue) <= 0 && x.CompareTo(lowerValue) >= 0);
 
         public static IEnumerable<T> RemoveWhile<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
         {
@@ -110,27 +104,15 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static T Get<T>(this IEnumerable<T> enumerable, int index) => enumerable.ElementAt(index);
 
-        public static T Get<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T>
-        {
-            return enumerable.FirstOrDefault(x => x.CompareTo(item) == 0);
-        }
+        public static T Get<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T> => enumerable.FirstOrDefault(x => x.CompareTo(item) == 0);
 
-        public static IEnumerable<T> GetAll<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T>
-        {
-            return enumerable.Where(x => x.CompareTo(item) == 0);
-        }
+        public static IEnumerable<T> GetAll<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T> => enumerable.Where(x => x.CompareTo(item) == 0);
 
-        public static IEnumerable<T> Remove<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T>
-        {
-            return enumerable.ToList().ChainableRemove(item);
-        }
+        public static IEnumerable<T> Remove<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T> => enumerable.ToList().ChainableRemove(item);
 
         public static IEnumerable<T> Remove<T>(this IEnumerable<T> enumerable, int index) => enumerable.ToList().ChainableRemoveAt(index);
 
-        public static IEnumerable<T> RemoveAll<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T>
-        {
-            return enumerable.Where(x => x.CompareTo(item) != 0);
-        }
+        public static IEnumerable<T> RemoveAll<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T> => enumerable.Where(x => x.CompareTo(item) != 0);
 
         public static IEnumerable<T> RemoveAll<T>(this IEnumerable<T> enumerable, Func<T, bool> func)
         {
