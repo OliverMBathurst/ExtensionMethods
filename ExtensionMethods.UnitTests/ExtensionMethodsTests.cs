@@ -75,6 +75,12 @@ namespace ExtensionMethods.UnitTests
             const string str = "exception 123";
             Assert.AreEqual(str, str.ToException().Message);
         }
+
+        [TestMethod]
+        public void IfFormatIsCalledWithValidArguments_ItShouldReturnAValidString()
+        {
+            Assert.AreEqual("str 1 2 3", "str {0} {1} {2}".Format(1, 2, 3));
+        }
         #endregion
 
         #region BooleanExtensionMethods
@@ -520,6 +526,23 @@ namespace ExtensionMethods.UnitTests
             list.InsertSorted(8, new Comparison<int>((x, y) => { return x.CompareTo(y); }));
             Assert.AreEqual(1, list.Count);
             Assert.AreEqual(8, list.First());
+        }
+
+        [TestMethod]
+        public void IfInsertWhereIsCalledWithAnElementAndAPredicate_ItShouldInsertTheElementAtTheRightPositionOfTheList()
+        {
+            IList<int> list = new List<int> { 5, 5, 6, 7, 8, 9 };
+            list = list.InsertWhere(8, x => x == 5);
+            Assert.AreEqual(7, list.Count);
+            Assert.AreEqual(8, list.First());
+        }
+
+        [TestMethod]
+        public void IfInsertWhereIsCalledWithAnElementAndAPredicateAndMultipleInsertsIsTrue_ItShouldInsertTheElementAtTheRightPositionsOfTheList()
+        {
+            IList<int> list = new List<int> { 5, 5, 6, 7, 8, 9 };
+            var result = list.InsertWhere(8, x => x == 5, true);
+            Assert.IsTrue(result.SequenceEqual(new List<int> { 8, 5, 8, 5, 6, 7, 8, 9}));
         }
         #endregion
 

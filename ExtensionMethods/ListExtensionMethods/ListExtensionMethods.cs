@@ -67,5 +67,31 @@ namespace ExtensionMethods.ListExtensionMethods
             }
             list.Add(item);            
         }
+
+        public static IList<T> InsertWhere<T>(this IList<T> list, T item, Func<T, bool> predicate, bool multipleInserts = false)
+        {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var @return = new List<T>();
+            for(var i = 0; i < list.Count; i++)
+            {
+                if (predicate(list[i]))
+                {
+                    @return.Add(item);
+                    if (!multipleInserts)
+                    {
+                        for(var j = i; j < list.Count; j++)
+                            @return.Add(list[j]);
+                        return @return;
+                    }
+                }
+
+                @return.Add(list[i]);
+            }
+            return @return;
+        }
     }
 }

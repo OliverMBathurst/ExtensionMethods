@@ -111,9 +111,9 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         public static IEnumerable<T> Replace<T>(this IEnumerable<T> enumerable, T itemtoReplace, T replacementItem) where T : IComparable<T>
         {
             var list = enumerable.ToList();
-            for(var i = 0; i < list.Count(); i++)
+            for (var i = 0; i < list.Count(); i++)
             {
-                if(list[i].CompareTo(itemtoReplace) == 0)
+                if (list[i].CompareTo(itemtoReplace) == 0)
                 {
                     list[i] = replacementItem;
                     return list;
@@ -125,10 +125,10 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         public static IEnumerable<T> RemoveWhile<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
         {
             var count = 0;
-            var enumerator = enumerable.GetEnumerator();            
+            var enumerator = enumerable.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                if (!predicate(enumerator.Current))                
+                if (!predicate(enumerator.Current))
                 {
                     break;
                 }

@@ -11,6 +11,10 @@ namespace ExtensionMethods.StringExtensionMethods
 
         public static string DefaultIfEmpty(this string str, string defaultValue) => string.IsNullOrWhiteSpace(str) ? defaultValue : str;
 
+        public static Exception ToException(this string str) => new Exception(str);
+
+        public static string Format(this string str, params object[] args) => string.Format(str, args);
+
         public static string Repeat(this string str, int n)
         {
             var strBuilder = new StringBuilder(str.Length * n);
@@ -20,7 +24,5 @@ namespace ExtensionMethods.StringExtensionMethods
             }
             return strBuilder.ToString();
         }
-
-        public static Exception ToException(this string str) => new Exception(str);
     }
 }
