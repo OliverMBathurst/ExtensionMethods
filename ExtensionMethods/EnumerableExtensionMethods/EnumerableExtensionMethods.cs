@@ -26,6 +26,8 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static IEnumerable<T> BetweenValuesInclusive<T>(this IEnumerable<T> enumerable, T lowerValue, T upperValue) where T : IComparable<T> => enumerable.Where(x => x.CompareTo(upperValue) <= 0 && x.CompareTo(lowerValue) >= 0);
 
+        public static bool AreAllTheSame<T>(this IEnumerable<T> enumerable) => enumerable.ToList().AreAllTheSame();
+
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable) => enumerable == null || enumerable.Count() == 0 ? true : false;
 
         public static T Random<T>(this IEnumerable<T> enumerable) => enumerable.ElementAt(new Random().Next(enumerable.Count() - 1));
