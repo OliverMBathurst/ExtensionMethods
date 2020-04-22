@@ -49,6 +49,8 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static bool IsNullOrEmpty<T>(this ICollection<T> collection) => collection == null || collection.Count == 0 ? true : false;
 
+        public static bool IsEmpty<T>(this ICollection<T> collection) => collection.Count == 0;
+
         public static IEnumerable<T> Shuffle<T>(this ICollection<T> collection)
         {
             var r = new Random();
@@ -64,6 +66,18 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         public static ICollection<T> ChainableAdd<T>(this ICollection<T> collection, T item)
         {
             collection.Add(item);
+            return collection;
+        }
+
+        public static ICollection<T> ChainableRemoveAt<T>(this ICollection<T> collection, int index)
+        {
+            collection.Remove(index);
+            return collection;
+        }
+
+        public static ICollection<T> ChainableRemove<T>(this ICollection<T> collection, T item)
+        {
+            collection.Remove(item);
             return collection;
         }
 

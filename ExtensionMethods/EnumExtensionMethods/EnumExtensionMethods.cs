@@ -1,30 +1,24 @@
-﻿using ExtensionMethods.EnumerableExtensionMethods;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace ExtensionMethods.EnumExtensionMethods
 {
     public static class EnumExtensionMethods
     {
-        public static IDictionary<int, TEnum> ToDictionary<TEnum>(this TEnum _) where TEnum : Enum
+        public static IDictionary<int, T> ToDictionary<T>() where T : struct
         {
-            var dict = new Dictionary<int, TEnum>();
-            var values = Enum.GetValues(typeof(TEnum));
-            var enumerator = values.GetEnumerator();
+            var dict = new Dictionary<int, T>();
+            if (!typeof(T).IsEnum)
+                return dict;
+
             var index = 0;
-            while (enumerator.MoveNext())
+            foreach (var enumValue in Enum.GetValues(typeof(T)))
             {
-                dict.Add(index, (TEnum)enumerator.Current);
+                dict.Add(index, (T)enumValue);
                 index++;
             }
 
             return dict;
-        }
-
-        public static bool HasDescription<TEnum>(this TEnum _) where TEnum : Enum
-        {
-            return typeof(TEnum).CustomAttributes.FirstOrNull(x => x.AttributeType == typeof(DescriptionAttribute)) != null;
         }
     }
 }

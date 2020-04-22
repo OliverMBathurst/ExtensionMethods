@@ -5,58 +5,22 @@ namespace ExtensionMethods.ListExtensionMethods
 {
     public static class ListExtensionMethods
     {
-        public static IList<T> ChainableAdd<T>(this IList<T> list, T item)
-        {
-            list.Add(item);
-            return list;
-        }
-
-        public static IList<T> ChainableRemoveAt<T>(this IList<T> list, int index)
-        {
-            list.RemoveAt(index);
-            return list;
-        }
-
-        public static IList<T> ChainableRemove<T>(this IList<T> list, T item)
-        {
-            list.Remove(item);
-            return list;
-        }
-
-        public static bool AreAllTheSame<T>(this IList<T> list) where T : IComparable<T>
-        {            
-            if(list == null)
-            {
-                throw new ArgumentNullException(nameof(list));
-            }
-            
-            if(list.Count < 2)
-            {
-                return true;
-            }
-
-            for(var i = 1; i < list.Count; i++)
-            {
-                if(list[i].CompareTo(list[0]) != 0)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         public static void InsertSorted<T>(this IList<T> list, T item) where T : IComparable<T>
         {
             if (item == null)
             {
                 throw new ArgumentNullException(nameof(item));
             }
-            for (var i = 0; i < list.Count; i++)
+
+            if (list.Count > 0)
             {
-                if (item.CompareTo(list[i]) < 0)
+                for (var i = 0; i < list.Count; i++)
                 {
-                    list.Insert(i, item);
-                    return;
+                    if (item.CompareTo(list[i]) < 0)
+                    {
+                        list.Insert(i, item);
+                        return;
+                    }
                 }
             }
             list.Add(item);
@@ -68,14 +32,18 @@ namespace ExtensionMethods.ListExtensionMethods
             {
                 throw new ArgumentNullException(nameof(item));
             }
-            for (var i = 0; i < list.Count; i++)
+
+            if (list.Count > 0)
             {
-                if (comparison(item, list[i]) < 0)
+                for (var i = 0; i < list.Count; i++)
                 {
-                    list.Insert(i, item);
-                    return;
+                    if (comparison(item, list[i]) < 0)
+                    {
+                        list.Insert(i, item);
+                        return;
+                    }
                 }
-            }            
+            }
             list.Add(item);            
         }
 
@@ -85,14 +53,18 @@ namespace ExtensionMethods.ListExtensionMethods
             {
                 throw new ArgumentNullException(nameof(item));
             }
-            for (var i = 0; i < list.Count; i++)
+
+            if (list.Count > 0)
             {
-                if (comparer.Compare(item, list[i]) < 0)
+                for (var i = 0; i < list.Count; i++)
                 {
-                    list.Insert(i, item);
-                    return;
+                    if (comparer.Compare(item, list[i]) < 0)
+                    {
+                        list.Insert(i, item);
+                        return;
+                    }
                 }
-            }            
+            }
             list.Add(item);            
         }
     }

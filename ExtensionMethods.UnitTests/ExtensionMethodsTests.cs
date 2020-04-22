@@ -3,8 +3,11 @@ using ExtensionMethods.StringExtensionMethods;
 using ExtensionMethods.GenericExtensionMethods;
 using ExtensionMethods.EnumerableExtensionMethods;
 using ExtensionMethods.BooleanExtensionMethods;
+using ExtensionMethods.ListExtensionMethods;
+using ExtensionMethods.ArrayExtensionMethods;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace ExtensionMethods.UnitTests
 {
@@ -441,6 +444,192 @@ namespace ExtensionMethods.UnitTests
             }
         }
         #endregion
+
+        #region EnumExtensionMethods
+        [TestMethod]
+        public void WhenToDictionaryIsCalledWithAnEnumType_ItShouldReturnADictionaryOfAllEnumValues()
+        {
+            var result = EnumExtensionMethods.EnumExtensionMethods.ToDictionary<TestEnum>();
+            Assert.IsTrue(result[0] == TestEnum.EnumValue1);
+            Assert.IsTrue(result[1] == TestEnum.EnumValue2);
+        }
+
+        [TestMethod]
+        public void WhenToDictionaryIsCalledWithANonEnumType_ItShouldReturnAnEmptyDictionary()
+        {
+            Assert.IsTrue(EnumExtensionMethods.EnumExtensionMethods.ToDictionary<int>().IsEmpty());
+        }
+        #endregion
+
+        #region ListExtensionMethods
+        [TestMethod]
+        public void IfIsDistinctIsCalledWithAListOfOneElement_ItShouldReturnTrue()
+        {
+            Assert.IsTrue(new List<int> { 5 }.IsDistinct());
+        }
+
+        [TestMethod]
+        public void IfIsDistinctIsCalledWithAListOfZeroElements_ItShouldReturnTrue()
+        {
+            Assert.IsTrue(new List<int> { }.IsDistinct());
+        }
+
+        [TestMethod]
+        public void IfIsDistinctIsCalledWithAListOfSameElements_ItShouldReturnFalse()
+        {
+            Assert.IsFalse(new List<int> { 5, 5, 5, 5, 5 }.IsDistinct());
+        }
+
+        [TestMethod]
+        public void IfIsDistinctIsCalledWithAListOfDifferentElements_ItShouldReturnTrue()
+        {
+            Assert.IsTrue(new List<int> { 5, 6, 7, 8, 9 }.IsDistinct());
+        }
+
+        [TestMethod]
+        public void IfInsertSortedIsCalledWithAnElementLargerThanAllElements_ItShouldAddTheElementAtTheRightPositionOfTheSortedList()
+        {
+            var list = new List<int> { 5, 6, 7, 8, 9 };
+            list.InsertSorted(10);
+            Assert.AreEqual(6, list.Count);
+            Assert.AreEqual(10, list.ElementAt(5));
+        }
+
+        [TestMethod]
+        public void IfInsertSortedIsCalledWithAnElement_ItShouldAddTheElementAtTheRightPositionOfTheSortedList()
+        {
+            var list = new List<int> { 5, 6, 7, 9, 10 };
+            list.InsertSorted(8);            
+            Assert.AreEqual(6, list.Count);
+            Assert.AreEqual(8, list.ElementAt(3));
+        }
+
+        [TestMethod]
+        public void IfInsertSortedIsCalledWithAnElementAndAComparator_ItShouldAddTheElementAtTheRightPositionOfTheSortedList()
+        {
+            var list = new List<int> { 5, 6, 7, 9, 10 };
+            list.InsertSorted(8, new Comparison<int>((x, y) => { return x.CompareTo(y); }));
+            Assert.AreEqual(6, list.Count);
+            Assert.AreEqual(8, list.ElementAt(3));
+        }
+
+        [TestMethod]
+        public void IfInsertSortedIsCalledWithAnElementAndAComparator_ItShouldAddTheElementAtTheRightPositionOfTheEmptyList()
+        {
+            var list = new List<int>();
+            list.InsertSorted(8, new Comparison<int>((x, y) => { return x.CompareTo(y); }));
+            Assert.AreEqual(1, list.Count);
+            Assert.AreEqual(8, list.First());
+        }
+        #endregion
+
+        #region ArrayExtensionMethods
+        [TestMethod]
+        public void IfLeftRotateIsCalledOnAnArray_ItShouldLeftRotateTheArray()
+        {
+            var arr = new int[] { 1, 2, 3, 4, 5 };
+            arr.LeftRotate();
+            Assert.IsTrue(arr.SequenceEqual(new int[] { 2, 3, 4, 5, 1 }));
+        }
+
+        [TestMethod]
+        public void IfLeftRotateIsCalledOnAnArrayWithTwoElements_ItShouldLeftRotateTheArray()
+        {
+            var arr = new int[] { 2, 3 };
+            arr.LeftRotate();
+            Assert.IsTrue(arr.SequenceEqual(new int[] { 3, 2 }));
+        }
+
+        [TestMethod]
+        public void IfLeftRotateIsCalledOnAnArrayWithOneElement_ItShouldLeftRotateTheArray()
+        {
+            var arr = new int[] { 3 };
+            arr.LeftRotate();
+            Assert.IsTrue(arr.SequenceEqual(new int[] { 3 }));
+        }
+
+        [TestMethod]
+        public void IfRightRotateIsCalledOnAnArray_ItShouldRightRotateTheArray()
+        {
+            var arr = new int[] { 1, 2, 3, 4, 5 };
+            arr.RightRotate();
+            Assert.IsTrue(arr.SequenceEqual(new int[] { 5, 1, 2, 3, 4 }));
+        }
+
+        [TestMethod]
+        public void IfRightRotateIsCalledOnAnArrayWithTwoElements_ItShouldRightRotateTheArray()
+        {
+            var arr = new int[] { 2, 3 };
+            arr.RightRotate();
+            Assert.IsTrue(arr.SequenceEqual(new int[] { 3, 2 }));
+        }
+
+        [TestMethod]
+        public void IfRightRotateIsCalledOnAnArrayWithOneElement_ItShouldRightRotateTheArray()
+        {
+            var arr = new int[] { 3 };
+            arr.RightRotate();
+            Assert.IsTrue(arr.SequenceEqual(new int[] { 3 }));
+        }
+
+        [TestMethod]
+        public void IfInsertSortedIsCalledWithAnElementLargerThanAllElements_ItShouldAddTheElementAtTheRightPositionOfTheSortedArray()
+        {
+            var array = new int[] { 5, 6, 7, 8, 9 };
+            array = array.InsertSorted(10);
+            Assert.AreEqual(6, array.Length);
+            Assert.AreEqual(10, array[5]);
+        }
+
+        [TestMethod]
+        public void IfInsertSortedIsCalledWithAnElement_ItShouldAddTheElementAtTheRightPositionOfTheSortedArray()
+        {
+            var array = new int[] { 5, 6, 7, 9, 10 };
+            array = array.InsertSorted(8);
+            Assert.AreEqual(6, array.Length);
+            Assert.AreEqual(8, array[3]);
+        }
+
+        [TestMethod]
+        public void IfInsertSortedIsCalledWithAnElement_ItShouldAddTheElementAtTheRightPositionOfTheEmptyArray()
+        {
+            var array = new int[] { }.InsertSorted(8);
+            Assert.AreEqual(1, array.Length);
+            Assert.AreEqual(8, array[0]);
+        }
+        #endregion
+
+        #region CollectionExtensionMethods
+        [TestMethod]
+        public void IfChainableAddIsCalledWithAValidObject_ItShouldAddTheObjectAndReturnTheList()
+        {
+            const int item = 5;
+            var list = new List<int>();
+            var list2 = list.ChainableAdd(item);
+            Assert.AreEqual(1, list2.Count);
+            Assert.AreEqual(5, list2.First());
+        }
+
+        [TestMethod]
+        public void IfChainableRemoveAtIsCalledWithAValidIndex_ItShouldRemoveTheObjectAndReturnTheList()
+        {
+            var list = new List<int>
+            {
+                5,
+                6,
+                8,
+            };
+        }
+
+        #endregion
+
+        private enum TestEnum
+        {
+            EnumValue1,
+            EnumValue2 
+        }
+
+        private enum BlankEnum { }
 
         private class TestType
         {

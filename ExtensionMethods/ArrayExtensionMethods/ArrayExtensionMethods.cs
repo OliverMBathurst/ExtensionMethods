@@ -32,34 +32,12 @@ namespace ExtensionMethods.ArrayExtensionMethods
             if (array.Length > 1)
             {
                 var tmp = array[array.Length - 1];
-                for (var i = array.Length - 1; i <= 1; i++)
+                for (var i = array.Length - 1; i > 0; i--)
                 {
                     array[i] = array[i - 1];
                 }
                 array[0] = tmp;
             }
-        }
-
-        public static bool AreAllTheSame<T>(this T[] array) where T : IComparable<T>
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
-
-            if (array.Length < 2)
-            {
-                return true;
-            }
-
-            for (var i = 1; i < array.Length; i++)
-            {
-                if (array[i].CompareTo(array[0]) != 0)
-                {
-                    return false;
-                }
-            }
-            return true;
         }
 
         public static T[] InsertSorted<T>(this T[] array, T item) where T : IComparable<T>
