@@ -599,28 +599,7 @@ namespace ExtensionMethods.UnitTests
         }
         #endregion
 
-        #region CollectionExtensionMethods
-        [TestMethod]
-        public void IfChainableAddIsCalledWithAValidObject_ItShouldAddTheObjectAndReturnTheList()
-        {
-            const int item = 5;
-            var list = new List<int>();
-            var list2 = list.ChainableAdd(item);
-            Assert.AreEqual(1, list2.Count);
-            Assert.AreEqual(5, list2.First());
-        }
-
-        [TestMethod]
-        public void IfChainableRemoveAtIsCalledWithAValidIndex_ItShouldRemoveTheObjectAndReturnTheList()
-        {
-            var list = new List<int>
-            {
-                5,
-                6,
-                8,
-            };
-        }
-
+        #region EnumerableExtensionMethods
         #endregion
 
         private enum TestEnum

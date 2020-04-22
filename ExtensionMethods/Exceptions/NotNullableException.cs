@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace ExtensionMethods.EnumerableExtensionMethods
+namespace ExtensionMethods.Exceptions
 {
     [Serializable]
     internal class NotNullableException : Exception

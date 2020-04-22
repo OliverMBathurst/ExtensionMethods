@@ -56,8 +56,6 @@ namespace ExtensionMethods.GenericExtensionMethods
 
         public static bool IsNull<T>(this T obj) => obj == null;
 
-        public static bool IsIn<T>(this T obj, ICollection<T> collection) => collection.Contains(obj);
-
         public static bool IsIn<T>(this T obj, params T[] array) => array.Contains(obj);
 
         public static bool IsIn<T>(this T obj, IEnumerable<T> enumerable) => enumerable.Contains(obj);
