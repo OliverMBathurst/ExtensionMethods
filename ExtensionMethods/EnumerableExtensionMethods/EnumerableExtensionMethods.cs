@@ -187,5 +187,41 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             }
             return list;
         }
+
+        public static IEnumerable<IList<T>> Split<T>(this IEnumerable<T> enumerable, int n)
+        {
+            var masterList = new List<List<T>>();
+            for(var i = 0; i < enumerable.Count(); i += n)
+                masterList.Add(enumerable.Skip(i).Take(n).ToList());
+
+            return masterList;
+        }
+
+        public static IEnumerable<IList<T>> MultiSplit<T>(this IEnumerable<T> enumerable, params Func<T, bool>[] funcs)
+        {
+            var masterList = new List<List<T>>();
+            for (var i = 0; i < funcs.Length; i++)
+                masterList.Add(new List<T>());
+
+            var enumerator = enumerable.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                for(var i = 0; i < funcs.Length; i++)
+                {
+                    if (funcs[i](enumerator.Current))
+                    {
+                        masterList[i].Add(enumerator.Current);
+                    }
+                }
+            }
+
+            return masterList;
+        }
+
+        public static void AddN<T>(this IEnumerable<T> enumerable, int n)
+        {            
+            for(var i = 0; i < n; i++)
+                enumerable = enumerable.ChainableAdd((T)Activator.CreateInstance(typeof(T)));
+        }
     }
 }
