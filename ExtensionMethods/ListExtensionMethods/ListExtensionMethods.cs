@@ -68,28 +68,6 @@ namespace ExtensionMethods.ListExtensionMethods
             list.Add(item);            
         }
 
-        public static bool AreAllTheSame<T>(this IList<T> list) where T : IComparable<T>
-        {
-            if (list == null)
-            {
-                throw new ArgumentNullException(nameof(list));
-            }
-
-            if (list.Count < 2)
-            {
-                return true;
-            }
-
-            for (var i = 1; i < list.Count; i++)
-            {
-                if (list[i].CompareTo(list[0]) != 0)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         public static IList<T> InsertWhere<T>(this IList<T> list, T item, Func<T, bool> predicate, bool multipleInserts = false)
         {
             if (item == null)

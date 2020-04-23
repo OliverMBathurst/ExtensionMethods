@@ -633,6 +633,55 @@ namespace ExtensionMethods.UnitTests
         #endregion
 
         #region EnumerableExtensionMethods
+        [TestMethod]
+        public void IfGetIsCalledWithAnIndex_ItShouldReturnTheElementAtThatIndex()
+        {
+            Assert.AreEqual(2, new List<int> { 1, 2, 3, 4 }.Get(1));
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void IfGetIsCalledWithAnInvalidIndex_ItShouldThrowAnError()
+        {
+            Assert.AreEqual(2, new List<int> { 1, 2, 3, 4 }.Get(8));
+        }
+
+        [TestMethod]
+        public void IfGetIsCalledWithAValidElement_ItShouldReturnThatElement()
+        {
+            var element = new TestType { TestProperty = true };
+            var list = new List<TestType> { element, new TestType(), new TestType() };
+
+            Assert.AreEqual(element, list.Get(element));
+        }
+
+        [TestMethod]
+        public void IfGetIsCalledWithAnElementThatDoesNotExist_ItShouldReturnThatElement()
+        {
+            var element = new TestType { TestProperty = true };
+            var list = new List<TestType> { new TestType(), new TestType() };
+
+            Assert.AreEqual(default, list.Get(element));
+        }
+
+        [TestMethod]
+        public void IfGetAllIsCalledWithAnElementThatExists_ItShouldReturnAllInstancesOfThatElementInTheEnumerable()
+        {
+            var element = new TestType { TestProperty = true };
+            var result = new List<TestType> { element, element, element }.GetAll(element);
+            Assert.AreEqual(3, result.Count());
+            Assert.IsTrue(result.AreAllTheSame());
+        }
+
+        [TestMethod]
+        public void IfRemoveIsCalledWithAnElementThatDoesExist_ItShouldRemoveThatElementAndReturnTheEnumerable()
+        {
+            var element = new TestType { TestProperty = true };
+            var list = new List<TestType> { new TestType(), new TestType(), element };
+            var resultsList = list.Remove(2);
+
+            Assert.IsFalse(resultsList.Contains(element));
+            Assert.AreEqual(2, resultsList.Count());
+        }
         #endregion
 
         private enum TestEnum
@@ -643,11 +692,13 @@ namespace ExtensionMethods.UnitTests
 
         private enum BlankEnum { }
 
-        private class TestType
+        private class TestType : IComparable<TestType>
         {
             public TestType() { }
 
             public bool TestProperty { get; set; } = false;
+
+            public int CompareTo(TestType other) => TestProperty.CompareTo(other.TestProperty);
         }
 
         private class TestType2

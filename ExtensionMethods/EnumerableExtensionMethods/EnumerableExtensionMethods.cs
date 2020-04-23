@@ -14,19 +14,19 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static IEnumerable<T> GetAll<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T> => enumerable.Where(x => x.CompareTo(item) == 0);
 
-        public static IEnumerable<T> Remove<T>(this IEnumerable<T> enumerable, T item) => enumerable.ToList().ChainableRemove(item);
+        public static IEnumerable<T> Remove<T>(this IEnumerable<T> enumerable, T item) => enumerable.WithoutElements(item);
 
-        public static IEnumerable<T> Remove<T>(this IEnumerable<T> enumerable, int index) => enumerable.ToList().ChainableRemoveAt(index);
+        public static IEnumerable<T> Remove<T>(this IEnumerable<T> enumerable, int index) => enumerable.WithoutElementsAt(index);
 
         public static IEnumerable<T> RemoveAll<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T> => enumerable.Where(x => x.CompareTo(item) != 0);
 
-        public static IEnumerable<T> ChainableAdd<T>(this IEnumerable<T> enumerable, T item) => enumerable.ToList().ChainableAdd(item);
+        public static IEnumerable<T> Add<T>(this IEnumerable<T> enumerable, T item) => enumerable.ChainableAdd(item);
 
         public static IEnumerable<T> BetweenValues<T>(this IEnumerable<T> enumerable, T lowerValue, T upperValue) where T : IComparable<T> => enumerable.Where(x => x.CompareTo(upperValue) < 0 && x.CompareTo(lowerValue) > 0);
 
         public static IEnumerable<T> BetweenValuesInclusive<T>(this IEnumerable<T> enumerable, T lowerValue, T upperValue) where T : IComparable<T> => enumerable.Where(x => x.CompareTo(upperValue) <= 0 && x.CompareTo(lowerValue) >= 0);
 
-        public static bool AreAllTheSame<T>(this IEnumerable<T> enumerable) => enumerable.ToList().AreAllTheSame();
+        public static bool AreAllTheSame<T>(this IEnumerable<T> enumerable) where T: IComparable<T> => AllTheSame(enumerable);
 
         public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable) => enumerable == null || enumerable.Count() == 0 ? true : false;
 
@@ -37,18 +37,6 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
             foreach (var e in enumerable) action(e);
-        }
-
-        public static IEnumerable<T> ChainableRemoveAt<T>(this IEnumerable<T> enumerable, int index)
-        {
-            enumerable.Remove(index);
-            return enumerable;
-        }
-
-        public static IEnumerable<T> ChainableRemove<T>(this IEnumerable<T> enumerable, T item)
-        {
-            enumerable.Remove(item);
-            return enumerable;
         }
 
         public static void Shuffle<T>(this IEnumerable<T> enumerable)
@@ -80,6 +68,28 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
             var firstOrDefault = enumerable.FirstOrDefault(func);
             return firstOrDefault == default ? null : firstOrDefault.Box();
+        }
+
+        public static IEnumerable<T> WithoutElementsAt<T>(this IEnumerable<T> enumerable, params int[] indexes)
+        {
+            for (var i = 0; i < enumerable.Count(); i++)
+            {
+                if (!indexes.Contains(i))
+                {
+                    yield return enumerable.ElementAt(i);
+                }
+            }
+        }
+
+        public static IEnumerable<T> WithoutElements<T>(this IEnumerable<T> enumerable, params T[] elements)
+        {
+            for (var i = 0; i < enumerable.Count(); i++)
+            {
+                if (!elements.Contains(enumerable.ElementAt(i)))
+                {
+                    yield return enumerable.ElementAt(i);
+                }
+            }
         }
 
         public static IEnumerable<T> ReplaceAll<T>(this IEnumerable<T> enumerable, T itemtoReplace, T replacementItem) where T : IComparable<T>
@@ -227,6 +237,28 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             }
 
             return masterList;
+        }
+
+        private static IEnumerable<T> ChainableAdd<T>(this IEnumerable<T> enumerable, T item)
+        {
+            var list = enumerable.ToList();
+            list.Add(item);
+            return list;
+        }
+
+        private static bool AllTheSame<T>(IEnumerable<T> enumerable) where T : IComparable<T>
+        {
+            if (enumerable == null)
+                throw new ArgumentNullException(nameof(enumerable));
+
+            if (enumerable.Count() < 2)
+                return true;
+
+            var comparison = enumerable.First();
+            for (var i = 1; i < enumerable.Count(); i++)
+                if (enumerable.Get(i).CompareTo(comparison) != 0)
+                    return false;
+            return true;
         }
     }
 }
