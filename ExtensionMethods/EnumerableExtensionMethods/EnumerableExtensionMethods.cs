@@ -34,6 +34,11 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static bool IsEmpty<T>(this IEnumerable<T> enumerable) => enumerable.Count() == 0;
 
+        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
+        {
+            foreach (var e in enumerable) action(e);
+        }
+
         public static IEnumerable<T> ChainableRemoveAt<T>(this IEnumerable<T> enumerable, int index)
         {
             enumerable.Remove(index);
@@ -56,6 +61,12 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         {
             var hashSet = new HashSet<T>();
             return enumerable.All(hashSet.Add);
+        }
+
+        public static void AddN<T>(this IEnumerable<T> enumerable, int n)
+        {
+            for (var i = 0; i < n; i++)
+                enumerable = enumerable.ChainableAdd((T)Activator.CreateInstance(typeof(T)));
         }
 
         public static IEnumerable<T> WherePrevious<T>(this IEnumerable<T> enumerable, Func<T, bool> func) =>
@@ -216,12 +227,6 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             }
 
             return masterList;
-        }
-
-        public static void AddN<T>(this IEnumerable<T> enumerable, int n)
-        {            
-            for(var i = 0; i < n; i++)
-                enumerable = enumerable.ChainableAdd((T)Activator.CreateInstance(typeof(T)));
         }
     }
 }
