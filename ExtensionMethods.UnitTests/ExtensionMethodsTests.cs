@@ -5,6 +5,7 @@ using ExtensionMethods.EnumerableExtensionMethods;
 using ExtensionMethods.BooleanExtensionMethods;
 using ExtensionMethods.ListExtensionMethods;
 using ExtensionMethods.ArrayExtensionMethods;
+using ExtensionMethods.RandomExtensionMethods;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
@@ -619,6 +620,15 @@ namespace ExtensionMethods.UnitTests
             var array = new int[] { }.InsertSorted(8);
             Assert.AreEqual(1, array.Length);
             Assert.AreEqual(8, array[0]);
+        }
+        #endregion
+
+        #region RandomExtensionMethods
+        [TestMethod]
+        public void IfGetRandomElementOfIsCalledWithParams_ItShouldReturnARandomElement()
+        {
+            var result = new Random().RandomElementOf(1, 2, 3);
+            Assert.IsTrue(result.IsIn(1, 2, 3));
         }
         #endregion
 
