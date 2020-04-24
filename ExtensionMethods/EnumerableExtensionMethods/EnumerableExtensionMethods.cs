@@ -133,6 +133,19 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             return false;
         }
 
+        public static bool Is<T>(this IEnumerable<T> enumerable, params T[] args) where T : IComparable<T>
+        {
+            var comparisonArray = enumerable.ToArray();
+            for (var i = 0; i < comparisonArray.Length; i++)
+            {
+                if (comparisonArray[i].CompareTo(args[i]) != 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public static IEnumerable<T> Replace<T>(this IEnumerable<T> enumerable, T itemtoReplace, T replacementItem) where T : IComparable<T>
         {
             var list = enumerable.ToList();
@@ -251,7 +264,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         private static bool AllTheSame<T>(IEnumerable<T> enumerable) where T : IComparable<T>
         {
             if (enumerable == null)
-                throw new ArgumentNullException(nameof(enumerable));
+                throw new ArgumentNullException(nameof(T));
 
             if (enumerable.Count() < 2)
                 return true;

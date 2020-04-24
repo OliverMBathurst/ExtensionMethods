@@ -7,9 +7,7 @@ namespace ExtensionMethods.ArrayExtensionMethods
         public static void LeftRotate<T>(this T[] array)
         {
             if(array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
+                throw new ArgumentNullException(nameof(T));
 
             if(array.Length > 1)
             {
@@ -25,9 +23,7 @@ namespace ExtensionMethods.ArrayExtensionMethods
         public static void RightRotate<T>(this T[] array)
         {
             if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
+                throw new ArgumentNullException(nameof(T));
 
             if (array.Length > 1)
             {
@@ -43,9 +39,7 @@ namespace ExtensionMethods.ArrayExtensionMethods
         public static bool AreAllTheSame<T>(this T[] array) where T : IComparable<T>
         {
             if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
+                throw new ArgumentNullException(nameof(T));
 
             if (array.Length < 2)
             {
@@ -64,10 +58,9 @@ namespace ExtensionMethods.ArrayExtensionMethods
 
         public static T[] InsertSorted<T>(this T[] array, T item) where T : IComparable<T>
         {
-            if(item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+            if (item == null || array == null)
+                throw new ArgumentNullException(nameof(T));
+            
 
             var arr = new T[array.Length + 1];
             var hasFoundIndex = false;

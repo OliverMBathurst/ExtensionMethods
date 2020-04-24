@@ -13,73 +13,59 @@ namespace ExtensionMethods.ListExtensionMethods
 
         public static void InsertSorted<T>(this IList<T> list, T item) where T : IComparable<T>
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+            if (item == null || list == null)
+                throw new ArgumentNullException(nameof(T));
 
-            if (list.Count > 0)
+            for (var i = 0; i < list.Count; i++)
             {
-                for (var i = 0; i < list.Count; i++)
+                if (item.CompareTo(list[i]) < 0)
                 {
-                    if (item.CompareTo(list[i]) < 0)
-                    {
-                        list.Insert(i, item);
-                        return;
-                    }
+                    list.Insert(i, item);
+                    return;
                 }
             }
+            
             list.Add(item);
         }
 
         public static void InsertSorted<T>(this IList<T> list, T item, Comparison<T> comparison) where T : IComparable<T>
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+            if (item == null || list == null)
+                throw new ArgumentNullException(nameof(T));
 
-            if (list.Count > 0)
+            for (var i = 0; i < list.Count; i++)
             {
-                for (var i = 0; i < list.Count; i++)
+                if (comparison(item, list[i]) < 0)
                 {
-                    if (comparison(item, list[i]) < 0)
-                    {
-                        list.Insert(i, item);
-                        return;
-                    }
+                    list.Insert(i, item);
+                    return;
                 }
             }
+            
             list.Add(item);            
         }
 
         public static void InsertSorted<T>(this IList<T> list, T item, IComparer<T> comparer) where T : IComparable<T>
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+            if (item == null || list == null)
+                throw new ArgumentNullException(nameof(T));
 
-            if (list.Count > 0)
+            for (var i = 0; i < list.Count; i++)
             {
-                for (var i = 0; i < list.Count; i++)
+                if (comparer.Compare(item, list[i]) < 0)
                 {
-                    if (comparer.Compare(item, list[i]) < 0)
-                    {
-                        list.Insert(i, item);
-                        return;
-                    }
+                    list.Insert(i, item);
+                    return;
                 }
             }
+            
             list.Add(item);            
         }
 
         public static IList<T> InsertWhere<T>(this IList<T> list, T item, Func<T, bool> predicate, bool multipleInserts = false)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+            if (item == null || list == null)
+                throw new ArgumentNullException(nameof(T));
 
             var @return = new List<T>();
             for(var i = 0; i < list.Count; i++)

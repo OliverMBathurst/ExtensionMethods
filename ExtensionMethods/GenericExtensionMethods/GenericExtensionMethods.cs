@@ -28,10 +28,10 @@ namespace ExtensionMethods.GenericExtensionMethods
 
         public static T Unbox<T>(this object obj) => (T)obj;
 
-        public static void TryDispose<T>(this T obj, bool throwException = false)
+        public static void TryDispose<T>(this T obj)
         {
             if (!(obj is IDisposable disposable)) return;
-            try { disposable.Dispose(); } catch (Exception e) { if (throwException) throw e; }
+            disposable.Dispose();
         }
 
         public static void ThrowIf<T>(this T obj, Func<T, bool> func)
@@ -91,24 +91,16 @@ namespace ExtensionMethods.GenericExtensionMethods
         }
 
         public static byte[] GetBytes<T>(this T obj)
-        {  
+        {
+            if (obj.IsNull()) throw new ArgumentNullException(nameof(T));
             var memoryStream = new MemoryStream();
             new BinaryFormatter().Serialize(memoryStream, obj);
             return memoryStream.ToArray();
         }
 
-        public static bool IsNullable<T>(this Type type)
-        {
-            if (type == null) return true;
-            if (Nullable.GetUnderlyingType(type) != null || !type.IsValueType)
-            {
-                return true;
-            }
-            return false;
-        }
-
         public static void Repeat<T>(this T obj, Action<T> action, int times)
         {
+            if (obj.IsNull()) throw new ArgumentNullException(nameof(T));
             for(var i = 0; i < times; i++)
                 action(obj);
         }
@@ -127,9 +119,8 @@ namespace ExtensionMethods.GenericExtensionMethods
         public static T DeepClone<T>(this T obj)
         {
             if(obj == null || !obj.GetType().IsSerializable)
-            {
                 return default;
-            }
+
             var stream = new MemoryStream();
             var bf = new BinaryFormatter();
             bf.Serialize(stream, obj);

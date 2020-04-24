@@ -204,6 +204,13 @@ namespace ExtensionMethods.UnitTests
         }
 
         [TestMethod]
+        public void IfIsNullableIsCalledWithANullType_ItShouldReturnTrue()
+        {
+            Type type = null;
+            Assert.IsTrue(type.IsNullable());
+        }
+
+        [TestMethod]
         public void IfIsNullIsCalledWithANonNullObject_ItShouldReturnFalse()
         {
             var obj = new TestType();
@@ -364,6 +371,14 @@ namespace ExtensionMethods.UnitTests
         }
 
         [TestMethod]
+        public void IfDeepCloneIsCalledWithANonSerializableObject_ItShouldReturnTheDefaultObject()
+        {
+            var a = new TestTypeNonSerializable();
+            var result = a.DeepClone();
+            Assert.AreEqual(default, result);
+        }
+
+        [TestMethod]
         public void IfParseIsCalledWithAnObjectThatCanBeParsed_ItShouldReturnAParsedObject()
         {
             const string str = "123";
@@ -396,6 +411,12 @@ namespace ExtensionMethods.UnitTests
             var disposable = new DisposableTestType();
             disposable.TryDispose();
             Assert.IsTrue(disposable.HasBeenDisposed);
+        }
+
+        [TestMethod]
+        public void IfTryDisposeIsCalledOnANonDisposableObject_ItShouldNotThrowAnException()
+        {
+            new int().TryDispose();
         }
 
         [TestMethod]
@@ -451,6 +472,59 @@ namespace ExtensionMethods.UnitTests
                 Assert.Fail();
             }
         }
+
+        [TestMethod]
+        public void IfRepeatIsCalledNTimes_ItShouldPerformTheActionNTimes()
+        {
+            var obj = new CountReferenceClass();
+            obj.Repeat((x) => x.Increment(), 5);
+            Assert.AreEqual(5, obj.Count);
+        }
+
+        [TestMethod]
+        public void IfRepeatIsCalled0Times_ItShouldPerformTheAction0Times()
+        {
+            var obj = new CountReferenceClass();
+            obj.Repeat((x) => x.Increment(), 0);
+            Assert.AreEqual(0, obj.Count);
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfRepeatIsCalledWithANullObject_ItShouldThrowAnException()
+        {
+            CountReferenceClass obj = null;
+            obj.Repeat((x) => x.Increment(), 0);
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfGetBytesIsCalledWithANullObject_ItShouldThrowAnException()
+        {
+            TestType obj = null;
+            obj.GetBytes();
+        }
+
+        [TestMethod]
+        public void IfGetBytesIsCalledWithAValidObject_ItShouldReturnTheCorrectBytes()
+        {
+            var @string = "test123";
+            var result = @string.GetBytes();
+            Assert.AreEqual(31, result.Length);
+            Assert.IsTrue(result.Is<byte>(0, 1, 0, 0, 0, 255, 255, 255, 255, 1, 0, 0, 0, 0, 0, 0, 0, 6, 1, 0, 0, 0, 7, 116, 101, 115, 116, 49, 50, 51, 11));
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfToMD5HashIsCalledWithANullObject_ItShouldThrowAnException()
+        {
+            TestType obj = null;
+            obj.ToMD5Hash();
+        }
+
+        [TestMethod]
+        public void IfToMD5HashIsCalledWithANonNullObject_ItShouldReturnTheMD5Hash()
+        {
+            Assert.AreEqual("16-E5-F3-3C-2B-BB-D2-80-51-E9-EF-B4-0C-1A-72-A3", "test string".ToMD5Hash());
+        }
+
         #endregion
 
         #region EnumExtensionMethods
@@ -479,7 +553,7 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfIsDistinctIsCalledWithAListOfZeroElements_ItShouldReturnTrue()
         {
-            Assert.IsTrue(new List<int> { }.IsDistinct());
+            Assert.IsTrue(new List<int>().IsDistinct());
         }
 
         [TestMethod]
@@ -492,24 +566,6 @@ namespace ExtensionMethods.UnitTests
         public void IfIsDistinctIsCalledWithAListOfDifferentElements_ItShouldReturnTrue()
         {
             Assert.IsTrue(new List<int> { 5, 6, 7, 8, 9 }.IsDistinct());
-        }
-
-        [TestMethod]
-        public void IfInsertSortedIsCalledWithAnElementLargerThanAllElements_ItShouldAddTheElementAtTheRightPositionOfTheSortedList()
-        {
-            var list = new List<int> { 5, 6, 7, 8, 9 };
-            list.InsertSorted(10);
-            Assert.AreEqual(6, list.Count);
-            Assert.AreEqual(10, list.ElementAt(5));
-        }
-
-        [TestMethod]
-        public void IfInsertSortedIsCalledWithAnElement_ItShouldAddTheElementAtTheRightPositionOfTheSortedList()
-        {
-            var list = new List<int> { 5, 6, 7, 9, 10 };
-            list.InsertSorted(8);            
-            Assert.AreEqual(6, list.Count);
-            Assert.AreEqual(8, list.ElementAt(3));
         }
 
         [TestMethod]
@@ -542,9 +598,140 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfInsertWhereIsCalledWithAnElementAndAPredicateAndMultipleInsertsIsTrue_ItShouldInsertTheElementAtTheRightPositionsOfTheList()
         {
-            IList<int> list = new List<int> { 5, 5, 6, 7, 8, 9 };
+            var list = new List<int> { 5, 5, 6, 7, 8, 9 };
             var result = list.InsertWhere(8, x => x == 5, true);
             Assert.IsTrue(result.SequenceEqual(new List<int> { 8, 5, 8, 5, 6, 7, 8, 9}));
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfInsertWhereIsCalledWithANullList_ItShouldThrowAnException()
+        {
+            List<int> list = null;
+            list.InsertWhere(8, x => x == 5, true);
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfInsertWhereIsCalledWithANullElement_ItShouldThrowAnException()
+        {
+            new List<TestType>().InsertWhere(null, x => x.TestProperty, true);
+        }
+
+        [TestMethod]
+        public void IfInsertSortedIsCalledWithAComparison_ItShouldInsertAccordingly()
+        {
+            var list = new List<TestType> { new TestType { TestProperty = true } };
+            list.InsertSorted(new TestType(), new Comparison<TestType>((x, y) => x.CompareTo(y)));
+            Assert.AreEqual(2, list.Count);
+            Assert.IsTrue(list[1].TestProperty);
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfInsertSortedIsCalledWithANullItem_ItShouldThrowAnException()
+        {
+            var list = new List<TestType>();
+            list.InsertSorted(null, new Comparison<TestType>((x, y) => x.CompareTo(y)));
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfInsertSortedIsCalledWithANullList_ItShouldThrowAnException()
+        {
+            List<TestType> list = null;
+            list.InsertSorted(new TestType(), new Comparison<TestType>((x, y) => x.CompareTo(y)));
+        }
+
+        [TestMethod]
+        public void IfInsertSortedIsCalledWithAComparer_ItShouldInsertAccordingly()
+        {
+            var list = new List<TestType> { new TestType { TestProperty = true } };
+            list.InsertSorted(new TestType(), new ComparerClass<TestType>());
+            Assert.AreEqual(2, list.Count);
+            Assert.IsTrue(list[1].TestProperty);
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfInsertSortedIsCalledWithANullItemAndAComparer_ItShouldThrowAnException()
+        {
+            var list = new List<TestType>();
+            list.InsertSorted(null, new ComparerClass<TestType>());
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfInsertSortedIsCalledWithANullListAndAComparer_ItShouldThrowAnException()
+        {
+            List<TestType> list = null;
+            list.InsertSorted(new TestType(), new ComparerClass<TestType>());
+        }
+
+        [TestMethod]
+        public void IfInsertSortedIsCalledWithAValidComparerAndANumberLargerThanTheRestInTheCollection_ItShouldAddTheNumberToTheEndOfTheCollection()
+        {
+            var list = new List<int> { 1, 2, 3, 4, 5, 6 };
+            list.InsertSorted(10, new ComparerClass<int>());
+            Assert.AreEqual(7, list.Count);
+            Assert.AreEqual(10, list.Last());
+        }
+
+        [TestMethod]
+        public void IfAddNIsCalledWithANumberN_ItShouldAddNElementsToTheList()
+        {
+            var list = new List<TestType>();
+            list.AddN(3);
+            Assert.AreEqual(3, list.Count);
+        }
+
+        [TestMethod]
+        public void IfAddNIsCalledWithANumberNOf0_ItShouldAdd0ElementsToTheList()
+        {
+            var list = new List<TestType>();
+            list.AddN(0);
+            Assert.AreEqual(0, list.Count);
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfInsertSortedIsCalledOnANullList_ItShouldThrowAnArgumentNullException()
+        {
+            List<int> list = null;
+            list.InsertSorted(1);
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfInsertSortedIsCalledOnAListWithANullArgument_ItShouldThrowAnArgumentNullException()
+        {
+            new List<TestType>().InsertSorted(null);
+        }
+
+        [TestMethod]
+        public void IfInsertSortedIsCalledWithAnElementLargerThanAllElements_ItShouldAddTheElementAtTheRightPositionOfTheSortedList()
+        {
+            var list = new List<int> { 5, 6, 7, 8, 9 };
+            list.InsertSorted(10);
+            Assert.AreEqual(6, list.Count);
+            Assert.AreEqual(10, list[5]);
+        }
+
+        [TestMethod]
+        public void IfInsertSortedIsCalledWithAnElement_ItShouldAddTheElementAtTheRightPositionOfTheSortedList()
+        {
+            var list = new List<int> { 5, 6, 7, 9, 10 };
+            list.InsertSorted(8);
+            Assert.AreEqual(6, list.Count);
+            Assert.AreEqual(8, list[3]);
+        }
+
+        [TestMethod]
+        public void IfInsertSortedIsCalledWithAnElement_ItShouldAddTheElementAtTheRightPositionOfTheEmptyList()
+        {
+            var list = new List<int>();
+            list.InsertSorted(8);
+            Assert.AreEqual(1, list.Count);
+            Assert.AreEqual(8, list[0]);
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfInsertSortedIsCalledWithANullElement_ItShouldThrowAnException()
+        {
+            var list = new List<TestType>();
+            list.InsertSorted(null);
         }
         #endregion
 
@@ -598,6 +785,58 @@ namespace ExtensionMethods.UnitTests
         }
 
         [TestMethod]
+        public void IfAllTheSameIsCalledWithAnArrayOfSameElements_ItShouldReturnTrue()
+        {
+            Assert.IsTrue(new int[] { 1, 1, 1 }.AreAllTheSame());
+        }
+
+        [TestMethod]
+        public void IfAllTheSameIsCalledWithAnArrayOfDifferentElements_ItShouldReturnFalse()
+        {
+            Assert.IsFalse(new int[] { 1, 2, 3 }.AreAllTheSame());
+        }
+
+        [TestMethod]
+        public void IfAllTheSameIsCalledOnAnEmptyArray_ItShouldReturnTrue()
+        {
+            Assert.IsTrue(new int[] { }.AreAllTheSame());
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfLeftRotateIsCalledOnANullArray_ItShouldThrowAnArgumentNullException()
+        {
+            int[] arr = null;
+            arr.LeftRotate();
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfRightRotateIsCalledOnANullArray_ItShouldThrowAnArgumentNullException()
+        {
+            int[] arr = null;
+            arr.RightRotate();
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfAreAllTheSameIsCalledOnANullArray_ItShouldThrowAnArgumentNullException()
+        {
+            int[] arr = null;
+            arr.AreAllTheSame();
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfInsertSortedIsCalledOnANullArray_ItShouldThrowAnArgumentNullException()
+        {
+            int[] arr = null;
+            arr.InsertSorted(1);
+        }
+
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void IfInsertSortedIsCalledOnAnArrayWithANullArgument_ItShouldThrowAnArgumentNullException()
+        {
+            new TestType[] { }.InsertSorted(null);
+        }
+
+        [TestMethod]
         public void IfInsertSortedIsCalledWithAnElementLargerThanAllElements_ItShouldAddTheElementAtTheRightPositionOfTheSortedArray()
         {
             var array = new int[] { 5, 6, 7, 8, 9 };
@@ -639,10 +878,17 @@ namespace ExtensionMethods.UnitTests
         {
             var arr = 1.To(16);
             for(var i = 1; i < 16; i++)
-            {
                 Assert.IsTrue(arr[i - 1] == i);
-            }
+
             Assert.AreEqual(15, arr.Length);
+        }
+
+        [TestMethod]
+        public void IfToIsCalledWithAToNumberLessThanTheNumber_ItShouldReturnAllIntegersInThatRange()
+        {
+            var arr = 16.To(1);
+            for (var i = 0; i < arr.Length; i++)
+                Assert.IsTrue(arr[i] == 16 - i);
         }
 
         [TestMethod]
@@ -651,7 +897,17 @@ namespace ExtensionMethods.UnitTests
             Assert.AreEqual(0, 1.To(1).Length);
         }
 
-        //do except here
+        [TestMethod]
+        public void IfIsInRangeIsCalledWithAToNumberBetweenTheTwoBounds_ItShouldReturnTrue()
+        {
+            Assert.IsTrue(1.IsInRange(0, 10));
+        }
+
+        [TestMethod]
+        public void IfIsInRangeIsCalledWithAToNumberNotBetweenTheTwoBounds_ItShouldReturnFalse()
+        {
+            Assert.IsFalse(1.IsInRange(3, 10));
+        }
         #endregion
 
         #region EnumerableExtensionMethods
@@ -734,6 +990,7 @@ namespace ExtensionMethods.UnitTests
 
         private enum BlankEnum { }
 
+        [Serializable]
         private class TestType : IComparable<TestType>
         {
             public TestType() { }
@@ -743,9 +1000,32 @@ namespace ExtensionMethods.UnitTests
             public int CompareTo(TestType other) => TestProperty.CompareTo(other.TestProperty);
         }
 
+        private class TestTypeNonSerializable
+        {
+            public TestTypeNonSerializable() { }
+
+            public bool TestProperty { get; set; } = false;
+
+            public int CompareTo(TestType other) => TestProperty.CompareTo(other.TestProperty);
+        }
+
+        private class CountReferenceClass
+        {
+            public CountReferenceClass() { }
+
+            public void Increment() => Count++;
+
+            public int Count { get; set; } = 0;
+        }
+
         private class TestType2
         {
             public TestType2() { }
+        }
+
+        private class ComparerClass<T> : IComparer<T> where T: IComparable<T>
+        {
+            public int Compare(T x, T y) => x.CompareTo(y);
         }
 
         private class DisposableTestType : IDisposable
