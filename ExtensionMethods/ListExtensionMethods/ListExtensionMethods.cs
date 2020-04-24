@@ -5,6 +5,12 @@ namespace ExtensionMethods.ListExtensionMethods
 {
     public static class ListExtensionMethods
     {
+        public static void AddN<T>(this IList<T> list, int n)
+        {
+            for (var i = 0; i < n; i++)
+                list.Add((T)Activator.CreateInstance(typeof(T)));
+        }
+
         public static void InsertSorted<T>(this IList<T> list, T item) where T : IComparable<T>
         {
             if (item == null)

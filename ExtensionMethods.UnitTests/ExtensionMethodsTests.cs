@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ExtensionMethods.StringExtensionMethods;
 using ExtensionMethods.GenericExtensionMethods;
 using ExtensionMethods.EnumerableExtensionMethods;
@@ -6,9 +9,7 @@ using ExtensionMethods.BooleanExtensionMethods;
 using ExtensionMethods.ListExtensionMethods;
 using ExtensionMethods.ArrayExtensionMethods;
 using ExtensionMethods.RandomExtensionMethods;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
+using ExtensionMethods.IntegerExtensionMethods;
 
 namespace ExtensionMethods.UnitTests
 {
@@ -457,8 +458,8 @@ namespace ExtensionMethods.UnitTests
         public void WhenToDictionaryIsCalledWithAnEnumType_ItShouldReturnADictionaryOfAllEnumValues()
         {
             var result = EnumExtensionMethods.EnumExtensionMethods.ToDictionary<TestEnum>();
-            Assert.IsTrue(result[0] == TestEnum.EnumValue1);
-            Assert.IsTrue(result[1] == TestEnum.EnumValue2);
+            Assert.IsTrue(result["EnumValue1"] == TestEnum.EnumValue1);
+            Assert.IsTrue(result["EnumValue2"] == TestEnum.EnumValue2);
         }
 
         [TestMethod]
@@ -632,6 +633,27 @@ namespace ExtensionMethods.UnitTests
         }
         #endregion
 
+        #region IntegerExtensionMethods
+        [TestMethod]
+        public void IfToIsCalledWithAToNumber_ItShouldReturnAllIntegersInThatRange()
+        {
+            var arr = 1.To(16);
+            for(var i = 1; i < 16; i++)
+            {
+                Assert.IsTrue(arr[i - 1] == i);
+            }
+            Assert.AreEqual(15, arr.Length);
+        }
+
+        [TestMethod]
+        public void IfToIsCalledWithAToNumberEqualToTheInitialNumber_ItShouldReturnAnEmptyArray()
+        {
+            Assert.AreEqual(0, 1.To(1).Length);
+        }
+
+        //do except here
+        #endregion
+
         #region EnumerableExtensionMethods
         [TestMethod]
         public void IfGetIsCalledWithAnIndex_ItShouldReturnTheElementAtThatIndex()
@@ -681,6 +703,26 @@ namespace ExtensionMethods.UnitTests
 
             Assert.IsFalse(resultsList.Contains(element));
             Assert.AreEqual(2, resultsList.Count());
+        }
+
+        [TestMethod]
+        public void IfRemoveAllIsCalledWithAnElementThatDoesExist_ItShouldRemoveAllMatchingElementsAndReturnTheEnumerable()
+        {
+            var element = new TestType { TestProperty = true };
+            var resultsList = new List<TestType> { new TestType(), element, element }.RemoveAll(element);
+
+            Assert.IsFalse(resultsList.Contains(element));
+            Assert.AreEqual(1, resultsList.Count());
+        }
+
+        [TestMethod]
+        public void IfRemoveAllIsCalledWithAnElementThatDoesNotExist_ItShouldReturnTheEnumerableWithTheSameElements()
+        {
+            var element = new TestType { TestProperty = true };
+            var resultsList = new List<TestType> { new TestType() }.RemoveAll(element);
+
+            Assert.IsFalse(resultsList.Contains(element));
+            Assert.AreEqual(1, resultsList.Count());
         }
         #endregion
 

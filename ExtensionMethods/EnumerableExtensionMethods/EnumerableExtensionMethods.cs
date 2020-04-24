@@ -32,6 +32,8 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static T Random<T>(this IEnumerable<T> enumerable) => enumerable.ElementAt(new Random().Next(enumerable.Count() - 1));
 
+        public static T RandomWhere<T>(this IEnumerable<T> enumerable, Func<T, bool> func) => enumerable.Where(x => func(x)).Random();
+
         public static bool IsEmpty<T>(this IEnumerable<T> enumerable) => enumerable.Count() == 0;
 
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)

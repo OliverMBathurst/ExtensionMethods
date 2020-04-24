@@ -87,6 +87,13 @@ namespace ExtensionMethods.GenericExtensionMethods
             }
         }
 
+        public static byte[] GetBytes<T>(this T obj)
+        {  
+            var memoryStream = new MemoryStream();
+            new BinaryFormatter().Serialize(memoryStream, obj);
+            return memoryStream.ToArray();
+        }
+
         public static bool IsNullable<T>(this Type type)
         {
             if (type == null) return true;
@@ -95,6 +102,12 @@ namespace ExtensionMethods.GenericExtensionMethods
                 return true;
             }
             return false;
+        }
+
+        public static void Repeat<T>(this T obj, Action<T> action, int times)
+        {
+            for(var i = 0; i < times; i++)
+                action(obj);
         }
 
         public static bool IsNullable<T>(this T obj)
