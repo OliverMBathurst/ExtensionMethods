@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 
 namespace ExtensionMethods.GenericExtensionMethods
 {
@@ -17,7 +18,9 @@ namespace ExtensionMethods.GenericExtensionMethods
 
         public static C Parse<T, C>(this T obj) => (C)TypeDescriptor.GetConverter(typeof(C)).ConvertFrom(obj);
 
-        public static object NullIfDefault<T>(this T obj) where T : class => obj == default ? (object)null : obj;
+        public static object NullIfDefault<T>(this T obj) where T : class => obj == default ? null : obj;
+
+        public static string ToMD5Hash<T>(this T obj) => BitConverter.ToString(new MD5CryptoServiceProvider().ComputeHash(GetBytes(obj)));
 
         public static bool IsDefault<T>(this T obj) where T : class => obj == default;
 
