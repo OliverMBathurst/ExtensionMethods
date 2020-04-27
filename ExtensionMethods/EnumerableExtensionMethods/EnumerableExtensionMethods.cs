@@ -1,7 +1,7 @@
-﻿using ExtensionMethods.Exceptions;
-using ExtensionMethods.GenericExtensionMethods;
+﻿using ExtensionMethods.GenericExtensionMethods;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace ExtensionMethods.EnumerableExtensionMethods
@@ -16,7 +16,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static IEnumerable<T> Remove<T>(this IEnumerable<T> enumerable, T item) => enumerable.WithoutElements(item);
 
-        public static IEnumerable<T> Remove<T>(this IEnumerable<T> enumerable, int index) => enumerable.WithoutElementsAt(index);
+        public static IEnumerable<T> RemoveAtIndex<T>(this IEnumerable<T> enumerable, int index) => enumerable.WithoutElementsAt(index);
 
         public static IEnumerable<T> RemoveAll<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T> => enumerable.Where(x => x.CompareTo(item) != 0);
 
@@ -25,6 +25,8 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         public static IEnumerable<T> BetweenValues<T>(this IEnumerable<T> enumerable, T lowerValue, T upperValue) where T : IComparable<T> => enumerable.Where(x => x.CompareTo(upperValue) < 0 && x.CompareTo(lowerValue) > 0);
 
         public static IEnumerable<T> BetweenValuesInclusive<T>(this IEnumerable<T> enumerable, T lowerValue, T upperValue) where T : IComparable<T> => enumerable.Where(x => x.CompareTo(upperValue) <= 0 && x.CompareTo(lowerValue) >= 0);
+
+        public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> enumerable) => InternalShuffle(enumerable, new Random());
 
         public static bool AreAllTheSame<T>(this IEnumerable<T> enumerable) where T: IComparable<T> => AllTheSame(enumerable);
 
@@ -41,22 +43,10 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             foreach (var e in enumerable) action(e);
         }
 
-        public static void Shuffle<T>(this IEnumerable<T> enumerable)
-        {
-            var r = new Random();
-            enumerable = enumerable.OrderBy(t => r.Next()).ToList();
-        }
-
         public static bool IsDistinct<T>(this IEnumerable<T> enumerable)
         {
             var hashSet = new HashSet<T>();
             return enumerable.All(hashSet.Add);
-        }
-
-        public static void AddN<T>(this IEnumerable<T> enumerable, int n)
-        {
-            for (var i = 0; i < n; i++)
-                enumerable = enumerable.ChainableAdd((T)Activator.CreateInstance(typeof(T)));
         }
 
         public static IEnumerable<T> WherePrevious<T>(this IEnumerable<T> enumerable, Func<T, bool> func) =>
@@ -66,10 +56,24 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static object FirstOrNull<T>(this IEnumerable<T> enumerable, Func<T, bool> func) where T : class
         {
-            if (!typeof(T).IsNullable()) throw new NotNullableException();
-
             var firstOrDefault = enumerable.FirstOrDefault(func);
             return firstOrDefault == default ? null : firstOrDefault.Box();
+        }
+
+        public static IEnumerable<T> AddN<T>(this IEnumerable<T> enumerable, int n)
+        {
+            var list = new List<T>(enumerable);
+            for (var i = 0; i < n; i++)
+                list.Add((T)Activator.CreateInstance(typeof(T)));
+            return list;
+        }
+
+        public static IEnumerable<T> FillWith<T>(this IEnumerable<T> enumerable, T item)
+        {
+            var array = enumerable.ToArray();
+            for (var i = 0; i < array.Length; i++)
+                array[i] = item;
+            return array;
         }
 
         public static IEnumerable<T> WithoutElementsAt<T>(this IEnumerable<T> enumerable, params int[] indexes)
@@ -105,32 +109,6 @@ namespace ExtensionMethods.EnumerableExtensionMethods
                 }
             }
             return list;
-        }
-
-        public static bool All<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
-        {
-            var enumerator = enumerable.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                if (!predicate(enumerator.Current))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static bool Any<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
-        {
-            var enumerator = enumerable.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                if (predicate(enumerator.Current))
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
         public static bool Is<T>(this IEnumerable<T> enumerable, params T[] args) where T : IComparable<T>
@@ -254,6 +232,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             return masterList;
         }
 
+        [ExcludeFromCodeCoverage]
         private static IEnumerable<T> ChainableAdd<T>(this IEnumerable<T> enumerable, T item)
         {
             var list = enumerable.ToList();
@@ -261,6 +240,19 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             return list;
         }
 
+        [ExcludeFromCodeCoverage]
+        private static IEnumerable<T> InternalShuffle<T>(IEnumerable<T> enumerable, Random r)
+        {
+            if (enumerable.Count() < 2)
+                return enumerable;
+            var result = enumerable.OrderBy(t => r.Next()).ToList();
+            if (!result.SequenceEqual(enumerable))
+                return result;
+            else
+                return InternalShuffle(enumerable, r);
+        }
+
+        [ExcludeFromCodeCoverage]
         private static bool AllTheSame<T>(IEnumerable<T> enumerable) where T : IComparable<T>
         {
             if (enumerable == null)

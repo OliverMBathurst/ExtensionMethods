@@ -4,6 +4,12 @@ namespace ExtensionMethods.ArrayExtensionMethods
 {
     public static class ArrayExtensionMethods
     {
+        public static void Fill<T>(this T[] array, T item)
+        {
+            for (var i = 0; i < array.Length; i++)
+                array[i] = item;
+        }
+
         public static void LeftRotate<T>(this T[] array)
         {
             if(array == null)

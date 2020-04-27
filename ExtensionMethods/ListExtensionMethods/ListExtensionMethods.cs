@@ -5,6 +5,19 @@ namespace ExtensionMethods.ListExtensionMethods
 {
     public static class ListExtensionMethods
     {
+        public static void Fill<T>(this IList<T> list, T item)
+        {
+            for (var i = 0; i < list.Count; i++)
+                list[i] = item;
+        }
+
+        public static IList<T> ChainableFill<T>(this IList<T> list, T item)
+        {
+            for (var i = 0; i < list.Count; i++)
+                list[i] = item;
+            return list;
+        }
+
         public static void AddN<T>(this IList<T> list, int n)
         {
             for (var i = 0; i < n; i++)
