@@ -1,4 +1,5 @@
 ﻿using ExtensionMethods.GenericExtensionMethods;
+using ExtensionMethods.ListExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -113,13 +114,16 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static bool Is<T>(this IEnumerable<T> enumerable, params T[] args) where T : IComparable<T>
         {
-            var comparisonArray = enumerable.ToArray();
-            for (var i = 0; i < comparisonArray.Length; i++)
+            if (enumerable.Count() != args.Length)
+                return false;
+
+            var index = 0;
+            foreach(var element in enumerable)
             {
-                if (comparisonArray[i].CompareTo(args[i]) != 0)
-                {
+                if (element.CompareTo(args[index]) != 0)
                     return false;
-                }
+
+                index++;
             }
             return true;
         }
@@ -141,13 +145,11 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         public static IEnumerable<T> RemoveWhile<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
         {
             var count = 0;
-            var enumerator = enumerable.GetEnumerator();
-            while (enumerator.MoveNext())
+            foreach(var element in enumerable)
             {
-                if (!predicate(enumerator.Current))
-                {
+                if (!predicate(element))
                     break;
-                }
+
                 count++;
             }
             return enumerable.Skip(count);
@@ -155,51 +157,34 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static IEnumerable<T> RemoveAll<T>(this IEnumerable<T> enumerable, Func<T, bool> func)
         {
-            var list = new List<T>();
-            var enumerator = enumerable.GetEnumerator();
-            while (enumerator.MoveNext())
+            foreach(var element in enumerable)
             {
-                if (!func(enumerator.Current))
+                if (!func(element))
                 {
-                    list.Add(enumerator.Current);
+                    yield return element;
                 }
             }
-            return list;
         }
 
         public static IEnumerable<int> AllIndexesOf<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T>
         {
-            var indexes = new List<int>();
-            var enumerator = enumerable.GetEnumerator();
             var index = 0;
-            while (enumerator.MoveNext())
+            foreach(var element in enumerable)
             {
-                if (enumerator.Current.CompareTo(item) == 0)
+                if (element.CompareTo(item) == 0)
                 {
-                    indexes.Add(index);
+                    yield return index;
                 }
                 index++;
             }
-
-            return indexes;
         }
 
         public static IEnumerable<T> ReplaceAll<T>(this IEnumerable<T> enumerable, Func<T, bool> func, T item)
         {
-            var list = new List<T>();
-            var enumerator = enumerable.GetEnumerator();
-            while (enumerator.MoveNext())
+            foreach(var element in enumerable)
             {
-                if (func(enumerator.Current))
-                {
-                    list.Add(item);
-                }
-                else
-                {
-                    list.Add(enumerator.Current);
-                }
+                yield return func(element) ? item : element;
             }
-            return list;
         }
 
         public static IEnumerable<IList<T>> Split<T>(this IEnumerable<T> enumerable, int n)
@@ -213,18 +198,14 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static IEnumerable<IList<T>> MultiSplit<T>(this IEnumerable<T> enumerable, params Func<T, bool>[] funcs)
         {
-            var masterList = new List<List<T>>();
-            for (var i = 0; i < funcs.Length; i++)
-                masterList.Add(new List<T>());
-
-            var enumerator = enumerable.GetEnumerator();
-            while (enumerator.MoveNext())
+            var masterList = new List<List<T>>().ChainableAddN(funcs.Length);
+            foreach (var element in enumerable)
             {
                 for(var i = 0; i < funcs.Length; i++)
                 {
-                    if (funcs[i](enumerator.Current))
+                    if (funcs[i](element))
                     {
-                        masterList[i].Add(enumerator.Current);
+                        masterList[i].Add(element);
                     }
                 }
             }
@@ -233,12 +214,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         }
 
         [ExcludeFromCodeCoverage]
-        private static IEnumerable<T> ChainableAdd<T>(this IEnumerable<T> enumerable, T item)
-        {
-            var list = enumerable.ToList();
-            list.Add(item);
-            return list;
-        }
+        private static IEnumerable<T> ChainableAdd<T>(this IEnumerable<T> enumerable, T item) => enumerable.ToList().ChainableListAdd(item);
 
         [ExcludeFromCodeCoverage]
         private static IEnumerable<T> InternalShuffle<T>(IEnumerable<T> enumerable, Random r)
@@ -262,8 +238,8 @@ namespace ExtensionMethods.EnumerableExtensionMethods
                 return true;
 
             var comparison = enumerable.First();
-            for (var i = 1; i < enumerable.Count(); i++)
-                if (enumerable.Get(i).CompareTo(comparison) != 0)
+            foreach(var element in enumerable.Skip(1))
+                if (element.CompareTo(comparison) != 0)
                     return false;
             return true;
         }

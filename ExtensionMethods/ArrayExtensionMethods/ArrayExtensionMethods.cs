@@ -48,9 +48,7 @@ namespace ExtensionMethods.ArrayExtensionMethods
                 throw new ArgumentNullException(nameof(T));
 
             if (array.Length < 2)
-            {
                 return true;
-            }
 
             for (var i = 1; i < array.Length; i++)
             {

@@ -18,10 +18,22 @@ namespace ExtensionMethods.ListExtensionMethods
             return list;
         }
 
+        public static IList<T> ChainableListAdd<T>(this IList<T> list, T item)
+        {
+            list.Add(item);
+            return list;
+        }
+
         public static void AddN<T>(this IList<T> list, int n)
         {
             for (var i = 0; i < n; i++)
                 list.Add((T)Activator.CreateInstance(typeof(T)));
+        }
+
+        public static IList<T> ChainableAddN<T>(this IList<T> list, int n)
+        {
+            AddN(list, n);
+            return list;
         }
 
         public static void InsertSorted<T>(this IList<T> list, T item) where T : IComparable<T>
