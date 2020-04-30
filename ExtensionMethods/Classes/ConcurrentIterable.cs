@@ -28,6 +28,8 @@ namespace ExtensionMethods.Classes
 
         public (T, C) Last => (CollectionOne.Last(), CollectionTwo.Last());
 
+        public (T, C) Previous => (CollectionOne[Index - 1], CollectionTwo[Index - 1]);
+
         private (T, C) CollectionsTuple => (CollectionOne[Index], CollectionTwo[Index]);
 
         public (T, C) Next()
@@ -49,9 +51,22 @@ namespace ExtensionMethods.Classes
         public bool GetNext(out (T, C) result)
         {
             result = (default(T), default(C));
-            if (HasNext)
+            try
             {
                 result = Next();
+                return true;
+            }
+            catch (ArgumentOutOfRangeException) { }
+
+            return false;
+        }
+
+        public bool GetPrevious(out (T, C) result)
+        {
+            result = (default(T), default(C));
+            if(Index > 0)
+            {
+                result = Previous;
                 return true;
             }
 
