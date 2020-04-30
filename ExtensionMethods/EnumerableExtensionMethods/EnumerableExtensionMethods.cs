@@ -1,4 +1,5 @@
-﻿using ExtensionMethods.GenericExtensionMethods;
+﻿using ExtensionMethods.Classes;
+using ExtensionMethods.GenericExtensionMethods;
 using ExtensionMethods.ListExtensionMethods;
 using System;
 using System.Collections.Generic;
@@ -117,13 +118,10 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             if (enumerable.Count() != args.Length)
                 return false;
 
-            var index = 0;
-            foreach(var element in enumerable)
+            foreach(var tuple in new ConcurrentIterable<T, T>(enumerable.ToArray(), args).AsEnumerable())
             {
-                if (element.CompareTo(args[index]) != 0)
+                if (tuple.Item1.CompareTo(tuple.Item2) != 0)
                     return false;
-
-                index++;
             }
             return true;
         }

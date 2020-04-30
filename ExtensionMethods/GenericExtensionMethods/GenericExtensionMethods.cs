@@ -37,65 +37,55 @@ namespace ExtensionMethods.GenericExtensionMethods
         public static void ThrowIf<T>(this T obj, Func<T, bool> func)
         {
             if (func(obj))
-            {
                 throw new Exception();
-            }
         }
 
         public static void ThrowIf<T>(this T obj, Func<T, bool> func, Exception e)
         {
             if (func(obj))
-            {
                 throw e;
-            }
         }
 
         public static void ThrowIfEquals<T>(this T obj, T value) where T : IComparable<T>
         {
             if(obj.CompareTo(value) == 0)
-            {
                 throw new Exception();
-            }
         }
 
         public static void ThrowIfEquals<T>(this T obj, T value, Exception e) where T : IComparable<T>
         {
             if(obj.CompareTo(value) == 0)
-            {
                 throw e;
-            }
         }
 
         public static void IfType<T>(this object obj, Action<T> action) where T : class
         {
             if (obj is T t)
-            {
                 action(t);
-            }
         }
 
         public static void IfType<T>(this object obj, Action action) where T : class
         {
             if (obj is T)
-            {
                 action();
-            }
         }
 
         public static void IfNotNull<T>(this T obj, Action<T> action)
         {
             if (obj != null)
-            {
                 action(obj);
-            }
         }
 
         public static byte[] GetBytes<T>(this T obj)
         {
             if (obj.IsNull()) throw new ArgumentNullException(nameof(T));
-            var memoryStream = new MemoryStream();
-            new BinaryFormatter().Serialize(memoryStream, obj);
-            return memoryStream.ToArray();
+            byte[] byteArray;
+            using (var memoryStream = new MemoryStream())
+            {
+                new BinaryFormatter().Serialize(memoryStream, obj);
+                byteArray = memoryStream.ToArray();
+            }
+            return byteArray;
         }
 
         public static void Repeat<T>(this T obj, Action<T> action, int times)
@@ -110,9 +100,8 @@ namespace ExtensionMethods.GenericExtensionMethods
             if (obj == null) return true;
             var type = typeof(T);
             if (Nullable.GetUnderlyingType(type) != null || !type.IsValueType)
-            {
                 return true;
-            }
+
             return false;
         }
 
@@ -121,12 +110,14 @@ namespace ExtensionMethods.GenericExtensionMethods
             if(obj == null || !obj.GetType().IsSerializable)
                 return default;
 
-            var stream = new MemoryStream();
-            var bf = new BinaryFormatter();
-            bf.Serialize(stream, obj);
-            stream.Position = 0;
-            var result = (T)bf.Deserialize(stream);
-            stream.Close();
+            T result;
+            using (var stream = new MemoryStream())
+            {
+                var bf = new BinaryFormatter();
+                bf.Serialize(stream, obj);
+                stream.Position = 0;
+                result = (T)bf.Deserialize(stream);
+            }                
             return result;
         }
     }
