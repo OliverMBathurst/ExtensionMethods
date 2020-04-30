@@ -40,7 +40,7 @@ namespace ExtensionMethods.Classes
                 if (HasNext)
                     @return = CollectionsTuple;
                 else
-                    throw new ArgumentOutOfRangeException("");
+                    throw new ArgumentOutOfRangeException("No element next in the collection.");
 
             Index++;
             return @return;
