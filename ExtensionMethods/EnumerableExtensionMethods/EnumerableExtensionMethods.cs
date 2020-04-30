@@ -1,10 +1,12 @@
-﻿using ExtensionMethods.Classes;
-using ExtensionMethods.GenericExtensionMethods;
-using ExtensionMethods.ListExtensionMethods;
-using System;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+using ExtensionMethods.Classes;
+using ExtensionMethods.GenericExtensionMethods;
+using ExtensionMethods.ListExtensionMethods;
+using ExtensionMethods.ArrayExtensionMethods;
+
 
 namespace ExtensionMethods.EnumerableExtensionMethods
 {
@@ -40,9 +42,38 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static bool IsEmpty<T>(this IEnumerable<T> enumerable) => enumerable.Count() == 0;
 
+        public static IEnumerable<T> FillWith<T>(this IEnumerable<T> enumerable, T item) => enumerable.ToArray().ForAndReturn((e, i) => { e[i] = item; });
+
+        public static void For<T>(this IEnumerable<T> enumerable, Action<T> action)
+        {
+            foreach(var element in enumerable) action(element);
+        }
+
+        public static void For<T>(this IEnumerable<T> enumerable, Action<int> action)
+        {
+            for(var i = 0; i < enumerable.Count(); i++) action(i);
+        }
+
+        public static void For<T>(this IEnumerable<T> enumerable, Action<IEnumerable<T>, int> action)
+        {
+            for (var i = 0; i < enumerable.Count(); i++) action(enumerable, i);
+        }
+
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
             foreach (var e in enumerable) action(e);
+        }
+
+        public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<int> action)
+        {
+            for (var i = 0; i < enumerable.Count(); i++) action(i);
+            return enumerable;
+        }
+
+        public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<IEnumerable<T>, int> action)
+        {
+            for (var i = 0; i < enumerable.Count(); i++) action(enumerable, i);
+            return enumerable;
         }
 
         public static bool IsDistinct<T>(this IEnumerable<T> enumerable)
@@ -70,12 +101,14 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             return list;
         }
 
-        public static IEnumerable<T> FillWith<T>(this IEnumerable<T> enumerable, T item)
+        public static void For<T>(this IEnumerable<T> enumerable, Action<T, int> action)
         {
-            var array = enumerable.ToArray();
-            for (var i = 0; i < array.Length; i++)
-                array[i] = item;
-            return array;
+            var index = 0;
+            foreach (var element in enumerable)
+            {
+                action(element, index);
+                index++;
+            }
         }
 
         public static IEnumerable<T> WithoutElementsAt<T>(this IEnumerable<T> enumerable, params int[] indexes)
@@ -101,17 +134,12 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         }
 
         public static IEnumerable<T> ReplaceAll<T>(this IEnumerable<T> enumerable, T itemtoReplace, T replacementItem) where T : IComparable<T>
-        {
-            var list = enumerable.ToList();
-            for (var i = 0; i < list.Count(); i++)
+        =>
+            enumerable.ToArray().ForAndReturn((e, i) =>
             {
-                if (list[i].CompareTo(itemtoReplace) == 0)
-                {
-                    list[i] = replacementItem;
-                }
-            }
-            return list;
-        }
+                if (e[i].CompareTo(itemtoReplace) == 0)
+                    e[i] = replacementItem;
+            });
 
         public static bool Is<T>(this IEnumerable<T> enumerable, params T[] args) where T : IComparable<T>
         {
@@ -129,16 +157,16 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static IEnumerable<T> Replace<T>(this IEnumerable<T> enumerable, T itemtoReplace, T replacementItem) where T : IComparable<T>
         {
-            var list = enumerable.ToList();
-            for (var i = 0; i < list.Count(); i++)
+            var array = enumerable.ToArray();
+            for (var i = 0; i < array.Length; i++)
             {
-                if (list[i].CompareTo(itemtoReplace) == 0)
+                if (array[i].CompareTo(itemtoReplace) == 0)
                 {
-                    list[i] = replacementItem;
-                    return list;
+                    array[i] = replacementItem;
+                    return array;
                 }
             }
-            return list;
+            return array;
         }
 
         public static IEnumerable<T> RemoveWhile<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
@@ -181,9 +209,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         public static IEnumerable<T> ReplaceAll<T>(this IEnumerable<T> enumerable, Func<T, bool> func, T item)
         {
             foreach(var element in enumerable)
-            {
                 yield return func(element) ? item : element;
-            }
         }
 
         public static IEnumerable<IList<T>> Split<T>(this IEnumerable<T> enumerable, int n)
@@ -198,16 +224,16 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         public static IEnumerable<IList<T>> MultiSplit<T>(this IEnumerable<T> enumerable, params Func<T, bool>[] funcs)
         {
             var masterList = new List<List<T>>().ChainableAddN(funcs.Length);
-            foreach (var element in enumerable)
+            enumerable.For((element) =>
             {
-                for(var i = 0; i < funcs.Length; i++)
+                funcs.For((function, functionIndex) =>
                 {
-                    if (funcs[i](element))
+                    if (function[functionIndex](element))
                     {
-                        masterList[i].Add(element);
+                        masterList[functionIndex].Add(element);
                     }
-                }
-            }
+                });
+            });
 
             return masterList;
         }

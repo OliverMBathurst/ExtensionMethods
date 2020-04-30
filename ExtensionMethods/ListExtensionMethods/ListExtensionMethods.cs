@@ -5,6 +5,16 @@ namespace ExtensionMethods.ListExtensionMethods
 {
     public static class ListExtensionMethods
     {
+        public static void For<T>(this IList<T> list, Action<IList<T>, int> action)
+        {
+            for (var i = 0; i < list.Count; i++) action(list, i);
+        }
+
+        public static IList<T> ForAndReturn<T>(this IList<T> list, Action<IList<T>, int> action)
+        {
+            for (var i = 0; i < list.Count; i++) action(list, i);
+            return list;
+        }
         public static void Fill<T>(this IList<T> list, T item)
         {
             for (var i = 0; i < list.Count; i++)

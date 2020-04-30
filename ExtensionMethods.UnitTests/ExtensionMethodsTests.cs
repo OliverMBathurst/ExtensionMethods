@@ -1284,6 +1284,23 @@ namespace ExtensionMethods.UnitTests
             Assert.IsTrue(new int[] { 1, 2, 3, 4, 5 }.BetweenValuesInclusive(99, 105).Is());
             Assert.IsTrue(new int[0].BetweenValuesInclusive(99, 109).Is());
         }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnAction_ItShouldPerformThatActionOnEveryIndexOfTheEnumerable()
+        {
+            var enumerable = new List<int> { 1, 2, 3, 4, 5 };
+            var indexes = new List<int>();
+            enumerable.For((i) => { indexes.Add(i); });
+            Assert.IsTrue(indexes.Is(0, 1, 2, 3, 4));
+        }
+
+        [TestMethod]
+        public void IfForAndReturnIsCalledWithAnAction_ItShouldPerformThatActionOnEveryIndexOfTheEnumerable_AndReturnTheEnumerable()
+        {
+            var enumerable = new List<int> { 1, 2, 3, 4, 5 };
+            var result = enumerable.ForAndReturn((i) => { });
+            Assert.IsTrue(enumerable.SequenceEqual(result));
+        }
         #endregion
 
         #region DictionaryExtensionMethods

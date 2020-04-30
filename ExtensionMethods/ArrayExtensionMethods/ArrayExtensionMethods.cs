@@ -10,6 +10,28 @@ namespace ExtensionMethods.ArrayExtensionMethods
                 array[i] = item;
         }
 
+        public static void For<T>(this T[] array, Action<int> action)
+        {
+            for (var i = 0; i < array.Length; i++) action(i);
+        }
+
+        public static void For<T>(this T[] array, Action<T[], int> action)
+        {
+            for (var i = 0; i < array.Length; i++) action(array, i);
+        }
+
+        public static T[] ForAndReturn<T>(this T[] array, Action<int> action)
+        {
+            for (var i = 0; i < array.Length; i++) action(i);
+            return array;
+        }
+
+        public static T[] ForAndReturn<T>(this T[] array, Action<T[], int> action)
+        {
+            for (var i = 0; i < array.Length; i++) action(array, i);
+            return array;
+        }
+
         public static void LeftRotate<T>(this T[] array)
         {
             if(array == null)
