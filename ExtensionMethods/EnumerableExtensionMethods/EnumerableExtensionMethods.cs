@@ -118,7 +118,8 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             if (enumerable.Count() != args.Length)
                 return false;
 
-            foreach(var tuple in new ConcurrentIterable<T, T>(enumerable.ToArray(), args).AsEnumerable())
+            var iterable = new ConcurrentIterable<T, T>(enumerable.ToArray(), args).AsEnumerable();
+            foreach (var tuple in iterable)
             {
                 if (tuple.Item1.CompareTo(tuple.Item2) != 0)
                     return false;

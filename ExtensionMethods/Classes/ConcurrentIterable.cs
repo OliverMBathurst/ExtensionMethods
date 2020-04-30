@@ -22,6 +22,8 @@ namespace ExtensionMethods.Classes
 
         public bool HasNext => Index < CollectionOne.Length;
 
+        public bool HasPrevious => Index > 0;
+
         public bool IsEmpty => CollectionOne.Count() == 0;
 
         public (T, C) First => (CollectionOne.First(), CollectionTwo.First());
@@ -29,8 +31,6 @@ namespace ExtensionMethods.Classes
         public (T, C) Last => (CollectionOne.Last(), CollectionTwo.Last());
 
         public (T, C) Previous => (CollectionOne[Index - 1], CollectionTwo[Index - 1]);
-
-        private (T, C) CollectionsTuple => (CollectionOne[Index], CollectionTwo[Index]);
 
         public (T, C) Next()
         {
@@ -64,7 +64,7 @@ namespace ExtensionMethods.Classes
         public bool GetPrevious(out (T, C) result)
         {
             result = (default(T), default(C));
-            if(Index > 0)
+            if(HasPrevious)
             {
                 result = Previous;
                 return true;
@@ -87,5 +87,7 @@ namespace ExtensionMethods.Classes
             for(var i = 0; i < CollectionOne.Length; i++)
                 yield return (CollectionOne[i], CollectionTwo[i]);
         }
+
+        private (T, C) CollectionsTuple => (CollectionOne[Index], CollectionTwo[Index]);
     }
 }

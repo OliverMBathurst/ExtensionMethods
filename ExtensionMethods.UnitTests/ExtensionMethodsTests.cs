@@ -10,6 +10,7 @@ using ExtensionMethods.ListExtensionMethods;
 using ExtensionMethods.ArrayExtensionMethods;
 using ExtensionMethods.RandomExtensionMethods;
 using ExtensionMethods.IntegerExtensionMethods;
+using ExtensionMethods.DictionaryExtensionMethods;
 
 namespace ExtensionMethods.UnitTests
 {
@@ -1022,9 +1023,15 @@ namespace ExtensionMethods.UnitTests
         }
 
         [TestMethod]
-        public void IfIsCalledWithAParamsArrayWithElementsThatDoNotExistInTheEnumerable_ItShouldReturnFalse()
+        public void IfIsIsCalledWithAParamsArrayWithElementsThatDoNotExistInTheEnumerable_ItShouldReturnFalse()
         {
             Assert.IsFalse(new List<int> { 1, 2, 3, 4, 5 }.Is(1, 2, 4, 3, 5));
+        }
+
+        [TestMethod]
+        public void IfIsIsCalledWithAParamsArrayOfADifferentLength_ItShouldReturnFalse()
+        {
+            Assert.IsFalse(new List<int> { 1, 2, 3 }.Is(1, 2));
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
@@ -1276,6 +1283,20 @@ namespace ExtensionMethods.UnitTests
             Assert.IsTrue(new int[] { 1, 2, 3, 4, 5 }.BetweenValuesInclusive(2, 3).Is(2, 3));
             Assert.IsTrue(new int[] { 1, 2, 3, 4, 5 }.BetweenValuesInclusive(99, 105).Is());
             Assert.IsTrue(new int[0].BetweenValuesInclusive(99, 109).Is());
+        }
+        #endregion
+
+        #region DictionaryExtensionMethods
+        [TestMethod]
+        public void IfAsReadOnlyIsCalled_ItShouldReturnTheReadOnlyDictionaryEquivalent()
+        {
+            var dict = new Dictionary<int, string> {
+                [0] = "Value1",
+                [1] = "Value2"
+            };
+            var dict2 = dict.AsReadOnly();
+            Assert.AreEqual("Value1", dict2[0]);
+            Assert.AreEqual("Value2", dict2[1]);
         }
         #endregion
 
