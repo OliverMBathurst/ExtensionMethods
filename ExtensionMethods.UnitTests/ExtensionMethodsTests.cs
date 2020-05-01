@@ -132,7 +132,7 @@ namespace ExtensionMethods.UnitTests
         public void IfAnObjectIsOfTypeT_ItShouldCallTheActionWithTheObject()
         {
             var hasCalled = false;
-            Action<TestType> action = (t) => { hasCalled = true; };
+            Action<TestType> action = (t) => hasCalled = true;
             new TestType().IfType(action);
             if (!hasCalled)
                 Assert.Fail();
@@ -142,7 +142,7 @@ namespace ExtensionMethods.UnitTests
         public void IfAnObjectIsNotOfTypeT_ItShouldNotCallTheActionWithTheObject()
         {
             var hasCalled = false;
-            Action<TestType2> action = (t) => { hasCalled = true; };
+            Action<TestType2> action = (t) => hasCalled = true;
             new TestType().IfType(action);
             if (hasCalled)
                 Assert.Fail();
@@ -152,7 +152,7 @@ namespace ExtensionMethods.UnitTests
         public void IfAnObjectIsNotOfTypeT_ItShouldNotCallTheAction()
         {
             var hasCalled = false;
-            Action action = () => { hasCalled = true; };
+            Action action = () => hasCalled = true;
             new TestType().IfType<TestType2>(action);
             if (hasCalled)
                 Assert.Fail();
@@ -162,7 +162,7 @@ namespace ExtensionMethods.UnitTests
         public void IfAnObjectIsOfTypeT_ItShouldCallTheAction()
         {
             var hasCalled = false;
-            Action action = () => { hasCalled = true; };
+            Action action = () => hasCalled = true;
             new TestType().IfType<TestType>(action);
             if (!hasCalled)
                 Assert.Fail();
@@ -173,7 +173,7 @@ namespace ExtensionMethods.UnitTests
         {
             var hasCalled = false;
             TestType testType = null;
-            Action<TestType> action = (t) => { hasCalled = true; };
+            Action<TestType> action = (t) => hasCalled = true;
             testType.IfNotNull(action);
             if (hasCalled)
                 Assert.Fail();
@@ -184,7 +184,7 @@ namespace ExtensionMethods.UnitTests
         {
             var hasCalled = false;
             var testType = new TestType();
-            Action<TestType> action = (t) => { hasCalled = true; };
+            Action<TestType> action = (t) => hasCalled = true;
             testType.IfNotNull(action);
             if (!hasCalled)
                 Assert.Fail();
@@ -546,6 +546,80 @@ namespace ExtensionMethods.UnitTests
 
         #region ListExtensionMethods
         [TestMethod]
+        public void IfForIsCalledWithAnActionOfT_ItShouldCallThatActionForEveryElementOfTheList()
+        {
+            var list = new List<int>();
+            new List<int> { 1, 2, 3, 4, 5 }.For((element) => list.Add(element));
+            Assert.IsTrue(list.Is(0, 1, 2, 3, 4));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfInt_ItShouldCallThatActionForEveryIndexOfTheList()
+        {
+            var list = new List<int>();
+            new List<int> { 1, 2, 3, 4, 5 }.For((i) => list.Add(i));
+            Assert.IsTrue(list.Is(0, 1, 2, 3, 4));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfTAndInt_ItShouldCallThatActionForEveryElementOfTheList()
+        {
+            var dict = new Dictionary<int, int>();
+            new List<int> { 1, 2, 3, 4, 5 }.For((element, index) => dict.Add(index, element));
+            Assert.IsTrue(dict.Is((0, 1), (1, 2), (2, 3), (3, 4), (4, 5)));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfTArrayAndInt_ItShouldCallThatActionForEveryElementOfTheList()
+        {
+            var list = new List<int>();
+            new List<int> { 1, 2, 3, 4, 5 }.For((l, i) => list.Add(l.Count + i));
+            Assert.IsTrue(list.Is(5, 6, 7, 8, 9));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfT_ItShouldCallThatActionForEveryElementOfTheArray_AndReturnTheList()
+        {
+            var list = new List<TestType>();
+            var returned = new List<TestType> { new TestType { TestProperty = true } }.ForAndReturn((element) => list.Add(element));
+            Assert.IsTrue(list.First().TestProperty);
+            Assert.IsTrue(returned.First().TestProperty);
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfInt_ItShouldCallThatActionForEveryIndexOfTheArray_AndReturnTheList()
+        {
+            var list = new List<int>();
+            var returned = new List<int> { 1, 2, 3, 4, 5 }.ForAndReturn((element) => list.Add(element));
+            Assert.IsTrue(list.Is(0, 1, 2, 3, 4));
+            Assert.IsTrue(returned.Is(1, 2, 3, 4, 5));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfTAndInt_ItShouldCallThatActionForEveryElementOfTheArray_AndReturnTheList()
+        {
+            var list = new List<(int index, TestType value)>();
+            var returned = new List<TestType> { new TestType { TestProperty = true } }
+                .ForAndReturn((element, index) => list.Add((index, element)));
+            Assert.IsTrue(list.First().index == 0);
+            Assert.IsTrue(list.First().value.TestProperty);
+            Assert.IsTrue(returned.First().TestProperty);
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfTArrayAndInt_ItShouldCallThatActionForEveryElementOfTheArray_AndReturnTheList()
+        {
+            var list = new List<int>();
+            var returned = new List<int> { 1, 2, 3, 4, 5 }
+                .ForAndReturn((arr, i) => {
+                    if (arr.Is(1, 2, 3, 4, 5))
+                        list.Add(i);
+                });
+            Assert.IsTrue(list.Is(0, 1, 2, 3, 4));
+            Assert.IsTrue(returned.Is(1, 2, 3, 4, 5));
+        }
+
+        [TestMethod]
         public void IfIsDistinctIsCalledWithAListOfOneElement_ItShouldReturnTrue()
         {
             Assert.IsTrue(new List<int> { 5 }.IsDistinct());
@@ -573,7 +647,7 @@ namespace ExtensionMethods.UnitTests
         public void IfInsertSortedIsCalledWithAnElementAndAComparator_ItShouldAddTheElementAtTheRightPositionOfTheSortedList()
         {
             var list = new List<int> { 5, 6, 7, 9, 10 };
-            list.InsertSorted(8, new Comparison<int>((x, y) => { return x.CompareTo(y); }));
+            list.InsertSorted(8, new Comparison<int>((x, y) => x.CompareTo(y)));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual(8, list.ElementAt(3));
         }
@@ -582,7 +656,7 @@ namespace ExtensionMethods.UnitTests
         public void IfInsertSortedIsCalledWithAnElementAndAComparator_ItShouldAddTheElementAtTheRightPositionOfTheEmptyList()
         {
             var list = new List<int>();
-            list.InsertSorted(8, new Comparison<int>((x, y) => { return x.CompareTo(y); }));
+            list.InsertSorted(8, new Comparison<int>((x, y) => x.CompareTo(y)));
             Assert.AreEqual(1, list.Count);
             Assert.AreEqual(8, list.First());
         }
@@ -758,6 +832,80 @@ namespace ExtensionMethods.UnitTests
 
         #region ArrayExtensionMethods
         [TestMethod]
+        public void IfForIsCalledWithAnActionOfT_ItShouldCallThatActionForEveryElementOfTheArray()
+        {
+            var list = new List<int>();
+            new int[] { 1, 2, 3, 4, 5 }.For((element) => list.Add(element));
+            Assert.IsTrue(list.Is(0, 1, 2, 3, 4));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfInt_ItShouldCallThatActionForEveryIndexOfTheArray()
+        {
+            var list = new List<int>();
+            new int[] { 1, 2, 3, 4, 5 }.For((i) => list.Add(i));
+            Assert.IsTrue(list.Is(0, 1, 2, 3, 4));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfTAndInt_ItShouldCallThatActionForEveryElementOfTheArray()
+        {
+            var dict = new Dictionary<int, int>();
+            new int[] { 1, 2, 3, 4, 5 }.For((element, index) => dict.Add(index, element));
+            Assert.IsTrue(dict.Is((0, 1), (1, 2), (2, 3), (3, 4), (4, 5)));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfTArrayAndInt_ItShouldCallThatActionForEveryElementOfTheArray()
+        {
+            var list = new List<int>();
+            new int[] { 1, 2, 3, 4, 5 }.For((arr, i) => list.Add(arr.Length + i));
+            Assert.IsTrue(list.Is(5, 6, 7, 8, 9));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfT_ItShouldCallThatActionForEveryElementOfTheArray_AndReturnTheArray()
+        {
+            var list = new List<TestType>();
+            var returned = new TestType[] { new TestType { TestProperty = true } }.ForAndReturn((element) => list.Add(element));
+            Assert.IsTrue(list.First().TestProperty);
+            Assert.IsTrue(returned.First().TestProperty);
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfInt_ItShouldCallThatActionForEveryIndexOfTheArray_AndReturnTheArray()
+        {
+            var list = new List<int>();
+            var returned = new int[] { 1, 2, 3, 4, 5 }.ForAndReturn((element) => list.Add(element));
+            Assert.IsTrue(list.Is(0, 1, 2, 3, 4));
+            Assert.IsTrue(returned.Is(1, 2, 3, 4, 5));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfTAndInt_ItShouldCallThatActionForEveryElementOfTheArray_AndReturnTheArray()
+        {
+            var list = new List<(int index, TestType value)>();
+            var returned = new TestType[] { new TestType { TestProperty = true } }
+                .ForAndReturn((element, index) => list.Add((index, element)));
+            Assert.IsTrue(list.First().index == 0);
+            Assert.IsTrue(list.First().value.TestProperty);
+            Assert.IsTrue(returned.First().TestProperty);
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfTArrayAndInt_ItShouldCallThatActionForEveryElementOfTheArray_AndReturnTheArray()
+        {
+            var list = new List<int>();
+            var returned = new int[] { 1, 2, 3, 4, 5 }
+                .ForAndReturn((arr, i) => {
+                    if (arr.Is(1, 2, 3, 4, 5))
+                        list.Add(i);
+                });
+            Assert.IsTrue(list.Is(0, 1, 2, 3, 4));
+            Assert.IsTrue(returned.Is(1, 2, 3, 4, 5));
+        }
+
+        [TestMethod]
         public void IfLeftRotateIsCalledOnAnArray_ItShouldLeftRotateTheArray()
         {
             var arr = new int[] { 1, 2, 3, 4, 5 };
@@ -915,6 +1063,30 @@ namespace ExtensionMethods.UnitTests
 
         #region IntegerExtensionMethods
         [TestMethod]
+        public void IfForFrom0IsCalled_ItShouldPerformAnActionOnEveryNumberFrom0ToN()
+        {
+            var list = new List<int>();
+            5.ForFromZero((i) => list.Add(i));
+            Assert.IsTrue(list.Is(0, 1, 2, 3, 4));
+        }
+
+        [TestMethod]
+        public void IfForFrom0IsCalledOnANegativeNumber_ItShouldPerformAnActionOnEveryNumberFrom0ToN()
+        {
+            var list = new List<int>();
+            (-4).ForFromZero((i) => list.Add(i));
+            Assert.IsTrue(list.Is(0, -1, -2, -3));
+        }
+
+        [TestMethod]
+        public void IfForToIsCalledWithAToNumber_ItShouldPerformAnActionOnEveryNumberInBetween()
+        {
+            var list = new List<int>();
+            12.ForTo(6, (i) => list.Add(i));
+            Assert.IsTrue(list.Is(12, 11, 10, 9, 8, 7));
+        }
+
+        [TestMethod]
         public void IfToIsCalledWithAToNumber_ItShouldReturnAllIntegersInThatRange()
         {
             var arr = 1.To(16);
@@ -952,6 +1124,80 @@ namespace ExtensionMethods.UnitTests
         #endregion
 
         #region EnumerableExtensionMethods
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfT_ItShouldCallThatActionForEveryElementOfTheEnumerable()
+        {
+            var hashSet = new HashSet<int>();
+            new HashSet<int> { 1, 2, 3, 4, 5 }.For((element) => hashSet.Add(element));
+            Assert.IsTrue(hashSet.Is(0, 1, 2, 3, 4));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfInt_ItShouldCallThatActionForEveryIndexOfTheEnumerable()
+        {
+            var hashSet = new HashSet<int>();
+            new List<int> { 1, 2, 3, 4, 5 }.For((i) => hashSet.Add(i));
+            Assert.IsTrue(hashSet.Is(0, 1, 2, 3, 4));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfTAndInt_ItShouldCallThatActionForEveryElementOfTheEnumerable()
+        {
+            var dict = new Dictionary<int, int>();
+            new HashSet<int> { 1, 2, 3, 4, 5 }.For((element, index) => dict.Add(index, element));
+            Assert.IsTrue(dict.Is((0, 1), (1, 2), (2, 3), (3, 4), (4, 5)));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfTArrayAndInt_ItShouldCallThatActionForEveryElementOfTheEnumerable()
+        {
+            var hashSet = new HashSet<int>();
+            new HashSet<int> { 1, 2, 3, 4, 5 }.For((l, i) => hashSet.Add(l.Count() + i));
+            Assert.IsTrue(hashSet.Is(5, 6, 7, 8, 9));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfT_ItShouldCallThatActionForEveryElementOfTheArray_AndReturnTheEnumerable()
+        {
+            var hashSet = new HashSet<TestType>();
+            var returned = new HashSet<TestType> { new TestType { TestProperty = true } }.ForAndReturn((element) => hashSet.Add(element));
+            Assert.IsTrue(hashSet.First().TestProperty);
+            Assert.IsTrue(returned.First().TestProperty);
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfInt_ItShouldCallThatActionForEveryIndexOfTheArray_AndReturnTheEnumerable()
+        {
+            var hashSet = new HashSet<int>();
+            var returned = new HashSet<int> { 1, 2, 3, 4, 5 }.ForAndReturn((element) => hashSet.Add(element));
+            Assert.IsTrue(hashSet.Is(0, 1, 2, 3, 4));
+            Assert.IsTrue(returned.Is(1, 2, 3, 4, 5));
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfTAndInt_ItShouldCallThatActionForEveryElementOfTheArray_AndReturnTheEnumerable()
+        {
+            var hashSet = new HashSet<(int index, TestType value)>();
+            var returned = new HashSet<TestType> { new TestType { TestProperty = true } }
+                .ForAndReturn((element, index) => hashSet.Add((index, element)));
+            Assert.IsTrue(hashSet.First().index == 0);
+            Assert.IsTrue(hashSet.First().value.TestProperty);
+            Assert.IsTrue(returned.First().TestProperty);
+        }
+
+        [TestMethod]
+        public void IfForIsCalledWithAnActionOfTArrayAndInt_ItShouldCallThatActionForEveryElementOfTheArray_AndReturnTheEnumerable()
+        {
+            var hashSet = new HashSet<int>();
+            var returned = new HashSet<int> { 1, 2, 3, 4, 5 }
+                .ForAndReturn((arr, i) => {
+                    if (arr.Is(1, 2, 3, 4, 5))
+                        hashSet.Add(i);
+                });
+            Assert.IsTrue(hashSet.Is(0, 1, 2, 3, 4));
+            Assert.IsTrue(returned.Is(1, 2, 3, 4, 5));
+        }
+
         [TestMethod]
         public void IfGetIsCalledWithAnIndex_ItShouldReturnTheElementAtThatIndex()
         {
@@ -1160,7 +1406,7 @@ namespace ExtensionMethods.UnitTests
         public void IfForEachIsCalledWithAnAction_ItShouldPerformTheActionOnEveryElement()
         {
             var list = new List<TestType> { new TestType(), new TestType() };
-            list.ForEach((t) => { t.TestProperty = true; });
+            list.ForEach((t) => t.TestProperty = true);
             Assert.IsTrue(list.All(x => x.TestProperty));
             Assert.AreEqual(2, list.Count);
 
@@ -1290,7 +1536,7 @@ namespace ExtensionMethods.UnitTests
         {
             var enumerable = new List<int> { 1, 2, 3, 4, 5 };
             var indexes = new List<int>();
-            enumerable.For((i) => { indexes.Add(i); });
+            enumerable.For((i) => indexes.Add(i));
             Assert.IsTrue(indexes.Is(0, 1, 2, 3, 4));
         }
 
@@ -1304,6 +1550,28 @@ namespace ExtensionMethods.UnitTests
         #endregion
 
         #region DictionaryExtensionMethods
+        [TestMethod]
+        public void IfIsIsCalledWithAMismatchedParamArray_ItShouldReturnFalse()
+        {
+            var dict = new Dictionary<int, string>
+            {
+                [0] = "1",
+                [1] = "2"
+            };
+            Assert.IsFalse(dict.Is((0, "1"), (1, "fail")));
+        }
+
+        [TestMethod]
+        public void IfIsIsCalledWithAnEquivalentParamArray_ItShouldReturnTrue()
+        {
+            var dict = new Dictionary<int, string>
+            {
+                [0] = "1",
+                [1] = "2"
+            };
+            Assert.IsTrue(dict.Is((0, "1"), (1, "2")));
+        }
+
         [TestMethod]
         public void IfAsReadOnlyIsCalled_ItShouldReturnTheReadOnlyDictionaryEquivalent()
         {

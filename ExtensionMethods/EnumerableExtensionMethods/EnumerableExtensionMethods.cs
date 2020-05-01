@@ -12,6 +12,59 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 {
     public static class EnumerableExtensionMethods
     {
+        #region For extension methods
+        public static void For<T>(this IEnumerable<T> enumerable, Action<T> action)
+        {
+            foreach (var element in enumerable) action(element);
+        }
+
+        public static void For<T>(this IEnumerable<T> enumerable, Action<int> action)
+        {
+            for (var i = 0; i < enumerable.Count(); i++) action(i);
+        }
+
+        public static void For<T>(this IEnumerable<T> enumerable, Action<T, int> action)
+        {
+            var index = 0;
+            foreach(var element in enumerable)
+            {
+                action(element, index);
+                index++;
+            }
+        }
+
+        public static void For<T>(this IEnumerable<T> enumerable, Action<IEnumerable<T>, int> action)
+        {
+            for (var i = 0; i < enumerable.Count(); i++) action(enumerable, i);
+        }
+        #endregion
+
+        #region For and return extension methods
+        public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<T> action)
+        {
+            enumerable.For((element) => action(element));
+            return enumerable;
+        }
+
+        public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<int> action)
+        {
+            enumerable.For((i) => action(i));
+            return enumerable;
+        }
+
+        public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<T, int> action)
+        {
+            enumerable.For((element, i) => action(element, i));
+            return enumerable;
+        }
+
+        public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<IEnumerable<T>, int> action)
+        {
+            enumerable.For((enumer, i) => action(enumer, i));
+            return enumerable;
+        }
+        #endregion
+
         public static T Get<T>(this IEnumerable<T> enumerable, int index) => enumerable.ElementAt(index);
 
         public static T Get<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T> => enumerable.FirstOrDefault(x => x.CompareTo(item) == 0);
@@ -42,40 +95,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static bool IsEmpty<T>(this IEnumerable<T> enumerable) => enumerable.Count() == 0;
 
-        public static IEnumerable<T> FillWith<T>(this IEnumerable<T> enumerable, T item) => enumerable.ToArray().ForAndReturn((e, i) => { e[i] = item; });
-
-        public static void For<T>(this IEnumerable<T> enumerable, Action<T> action)
-        {
-            foreach(var element in enumerable) action(element);
-        }
-
-        public static void For<T>(this IEnumerable<T> enumerable, Action<int> action)
-        {
-            for(var i = 0; i < enumerable.Count(); i++) action(i);
-        }
-
-        public static void For<T>(this IEnumerable<T> enumerable, Action<IEnumerable<T>, int> action)
-        {
-            for (var i = 0; i < enumerable.Count(); i++) action(enumerable, i);
-        }
-
-        public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<T> action)
-        {
-            enumerable.For((element) => { action(element); });
-            return enumerable;
-        }
-
-        public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<int> action)
-        {
-            enumerable.For((i) => { action(i); });
-            return enumerable;
-        }
-
-        public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<IEnumerable<T>, int> action)
-        {
-            enumerable.For((element, i) => { action(element, i); });
-            return enumerable;
-        }
+        public static IEnumerable<T> FillWith<T>(this IEnumerable<T> enumerable, T item) => enumerable.ToArray().ForAndReturn((e, i) => e[i] = item);
 
         public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
@@ -107,16 +127,6 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             return list;
         }
 
-        public static void For<T>(this IEnumerable<T> enumerable, Action<T, int> action)
-        {
-            var index = 0;
-            foreach (var element in enumerable)
-            {
-                action(element, index);
-                index++;
-            }
-        }
-
         public static IEnumerable<T> WithoutElementsAt<T>(this IEnumerable<T> enumerable, params int[] indexes)
         {
             for (var i = 0; i < enumerable.Count(); i++)
@@ -141,10 +151,10 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static IEnumerable<T> ReplaceAll<T>(this IEnumerable<T> enumerable, T itemtoReplace, T replacementItem) where T : IComparable<T>
         =>
-            enumerable.ToArray().ForAndReturn((e, i) =>
+            enumerable.ToArray().ForAndReturn((array, index) =>
             {
-                if (e[i].CompareTo(itemtoReplace) == 0)
-                    e[i] = replacementItem;
+                if (array[index].CompareTo(itemtoReplace) == 0)
+                    array[index] = replacementItem;
             });
 
         public static bool Is<T>(this IEnumerable<T> enumerable, params T[] args) where T : IComparable<T>
@@ -154,10 +164,8 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
             var iterable = new ConcurrentIterable<T, T>(enumerable.ToArray(), args).AsEnumerable();
             foreach (var tuple in iterable)
-            {
                 if (tuple.Item1.CompareTo(tuple.Item2) != 0)
                     return false;
-            }
             return true;
         }
 
@@ -263,7 +271,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         private static bool AllTheSame<T>(IEnumerable<T> enumerable) where T : IComparable<T>
         {
             if (enumerable == null)
-                throw new ArgumentNullException(nameof(T));
+                throw new ArgumentNullException(nameof(IEnumerable<T>));
 
             if (enumerable.Count() < 2)
                 return true;

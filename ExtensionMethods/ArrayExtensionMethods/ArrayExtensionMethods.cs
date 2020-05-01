@@ -4,6 +4,7 @@ namespace ExtensionMethods.ArrayExtensionMethods
 {
     public static class ArrayExtensionMethods
     {
+        #region For extension methods
         public static void For<T>(this T[] array, Action<T> action)
         {
             for (var i = 0; i < array.Length; i++) action(array[i]);
@@ -14,6 +15,11 @@ namespace ExtensionMethods.ArrayExtensionMethods
             for (var i = 0; i < array.Length; i++) action(i);
         }
 
+        public static void For<T>(this T[] array, Action<T, int> action)
+        {
+            for (var i = 0; i < array.Length; i++) action(array[i], i);
+        }
+
         public static void For<T>(this T[] array, Action<T[], int> action)
         {
             for (var i = 0; i < array.Length; i++) action(array, i);
@@ -21,21 +27,28 @@ namespace ExtensionMethods.ArrayExtensionMethods
 
         public static T[] ForAndReturn<T>(this T[] array, Action<T> action)
         {
-            array.For((element) => { action(element); });
+            array.For((element) => action(element));
             return array;
         }
 
         public static T[] ForAndReturn<T>(this T[] array, Action<int> action)
         {
-            array.For((i) => { action(i); });
+            array.For((i) => action(i));
+            return array;
+        }
+
+        public static T[] ForAndReturn<T>(this T[] array, Action<T, int> action)
+        {
+            array.For((arr, i) => action(arr[i], i));
             return array;
         }
 
         public static T[] ForAndReturn<T>(this T[] array, Action<T[], int> action)
         {
-            array.For((arr, i) => { action(arr, i); });
+            array.For((arr, i) => action(arr, i));
             return array;
         }
+        #endregion
 
         public static void Fill<T>(this T[] array, T item)
         {

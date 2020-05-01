@@ -5,7 +5,52 @@ namespace ExtensionMethods.ListExtensionMethods
 {
     public static class ListExtensionMethods
     {
-        //for and forandreturn methods here
+        #region For extension methods
+        public static void For<T>(this IList<T> list, Action<T> action)
+        {
+            for (var i = 0; i < list.Count; i++) action(list[i]);
+        }
+
+        public static void For<T>(this IList<T> list, Action<int> action)
+        {
+            for (var i = 0; i < list.Count; i++) action(i);
+        }
+
+        public static void For<T>(this IList<T> list, Action<T, int> action)
+        {
+            for (var i = 0; i < list.Count; i++) action(list[i], i);
+        }
+
+        public static void For<T>(this IList<T> list, Action<IList<T>, int> action)
+        {
+            for (var i = 0; i < list.Count; i++) action(list, i);
+        }
+
+        public static IList<T> ForAndReturn<T>(this IList<T> list, Action<T> action)
+        {
+            list.For((element) => action(element));
+            return list;
+        }
+
+        public static IList<T> ForAndReturn<T>(this IList<T> list, Action<int> action)
+        {
+            list.For((i) => action(i));
+            return list;
+        }
+
+        public static IList<T> ForAndReturn<T>(this IList<T> list, Action<T, int> action)
+        {
+            list.For((element, index) => action(element, index));
+            return list;
+        }
+
+        public static IList<T> ForAndReturn<T>(this IList<T> list, Action<IList<T>, int> action)
+        {
+            list.For((l, index) => action(l, index));
+            return list;
+        }
+        #endregion
+
         public static void Fill<T>(this IList<T> list, T item)
         {
             for (var i = 0; i < list.Count; i++)
@@ -39,8 +84,10 @@ namespace ExtensionMethods.ListExtensionMethods
 
         public static void InsertSorted<T>(this IList<T> list, T item) where T : IComparable<T>
         {
-            if (item == null || list == null)
+            if (item == null)
                 throw new ArgumentNullException(nameof(T));
+            if (list == null)
+                throw new ArgumentNullException(nameof(IList<T>));
 
             for (var i = 0; i < list.Count; i++)
             {
@@ -56,8 +103,10 @@ namespace ExtensionMethods.ListExtensionMethods
 
         public static void InsertSorted<T>(this IList<T> list, T item, Comparison<T> comparison) where T : IComparable<T>
         {
-            if (item == null || list == null)
+            if (item == null)
                 throw new ArgumentNullException(nameof(T));
+            if (list == null)
+                throw new ArgumentNullException(nameof(IList<T>));
 
             for (var i = 0; i < list.Count; i++)
             {
@@ -73,8 +122,10 @@ namespace ExtensionMethods.ListExtensionMethods
 
         public static void InsertSorted<T>(this IList<T> list, T item, IComparer<T> comparer) where T : IComparable<T>
         {
-            if (item == null || list == null)
+            if (item == null)
                 throw new ArgumentNullException(nameof(T));
+            if (list == null)
+                throw new ArgumentNullException(nameof(IList<T>));
 
             for (var i = 0; i < list.Count; i++)
             {
@@ -90,8 +141,10 @@ namespace ExtensionMethods.ListExtensionMethods
 
         public static IList<T> InsertWhere<T>(this IList<T> list, T item, Func<T, bool> predicate, bool multipleInserts = false)
         {
-            if (item == null || list == null)
+            if (item == null)
                 throw new ArgumentNullException(nameof(T));
+            if (list == null)
+                throw new ArgumentNullException(nameof(IList<T>));
 
             var @return = new List<T>();
             for(var i = 0; i < list.Count; i++)

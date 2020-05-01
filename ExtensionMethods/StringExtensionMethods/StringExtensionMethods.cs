@@ -19,7 +19,7 @@ namespace ExtensionMethods.StringExtensionMethods
         public static string Repeat(this string str, int n)
         {            
             var strBuilder = new StringBuilder(str.Length * n);
-            0.ForTo(n, (i) => { strBuilder.Append(str); });
+            0.ForTo(n, (i) => strBuilder.Append(str));
             return strBuilder.ToString();
         }
     }
