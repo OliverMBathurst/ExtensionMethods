@@ -59,21 +59,27 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             for (var i = 0; i < enumerable.Count(); i++) action(enumerable, i);
         }
 
-        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
+        public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
-            foreach (var e in enumerable) action(e);
+            enumerable.For((element) => { action(element); });
+            return enumerable;
         }
 
         public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<int> action)
         {
-            for (var i = 0; i < enumerable.Count(); i++) action(i);
+            enumerable.For((i) => { action(i); });
             return enumerable;
         }
 
         public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<IEnumerable<T>, int> action)
         {
-            for (var i = 0; i < enumerable.Count(); i++) action(enumerable, i);
+            enumerable.For((element, i) => { action(element, i); });
             return enumerable;
+        }
+
+        public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
+        {
+            foreach (var e in enumerable) action(e);
         }
 
         public static bool IsDistinct<T>(this IEnumerable<T> enumerable)

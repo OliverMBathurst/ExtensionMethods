@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using ExtensionMethods.IntegerExtensionMethods;
 
 namespace ExtensionMethods.StringExtensionMethods
 {
@@ -16,12 +17,9 @@ namespace ExtensionMethods.StringExtensionMethods
         public static string Format(this string str, params object[] args) => string.Format(str, args);
 
         public static string Repeat(this string str, int n)
-        {
+        {            
             var strBuilder = new StringBuilder(str.Length * n);
-            for(var i = 0; i < n; i++)
-            {
-                strBuilder.Append(str);
-            }
+            0.ForTo(n, (i) => { strBuilder.Append(str); });
             return strBuilder.ToString();
         }
     }

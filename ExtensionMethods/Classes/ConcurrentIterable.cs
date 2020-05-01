@@ -6,9 +6,9 @@ namespace ExtensionMethods.Classes
 {
     public class ConcurrentIterable<T, C>
     {
-        public ConcurrentIterable(ICollection<T> collection, ICollection<C> collectionTwo)
+        public ConcurrentIterable(IEnumerable<T> collection, IEnumerable<C> collectionTwo)
         {
-            if (collection.Count != collectionTwo.Count)
+            if (collection.Count() != collectionTwo.Count())
                 throw new ArgumentException("Collections are not of the same length.");
             CollectionOne = collection.ToArray();
             CollectionTwo = collectionTwo.ToArray();
