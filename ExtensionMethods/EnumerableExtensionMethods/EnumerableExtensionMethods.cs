@@ -127,28 +127,6 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             return list;
         }
 
-        public static IEnumerable<T> WithoutElementsAt<T>(this IEnumerable<T> enumerable, params int[] indexes)
-        {
-            for (var i = 0; i < enumerable.Count(); i++)
-            {
-                if (!indexes.Contains(i))
-                {
-                    yield return enumerable.ElementAt(i);
-                }
-            }
-        }
-
-        public static IEnumerable<T> WithoutElements<T>(this IEnumerable<T> enumerable, params T[] elements)
-        {
-            for (var i = 0; i < enumerable.Count(); i++)
-            {
-                if (!elements.Contains(enumerable.ElementAt(i)))
-                {
-                    yield return enumerable.ElementAt(i);
-                }
-            }
-        }
-
         public static IEnumerable<T> ReplaceAll<T>(this IEnumerable<T> enumerable, T itemtoReplace, T replacementItem) where T : IComparable<T>
         =>
             enumerable.ToArray().ForAndReturn((array, index) =>
@@ -156,6 +134,56 @@ namespace ExtensionMethods.EnumerableExtensionMethods
                 if (array[index].CompareTo(itemtoReplace) == 0)
                     array[index] = replacementItem;
             });
+
+        public static IEnumerable<T> Skip<T>(this IEnumerable<T> enumerable, params T[] args)
+        {
+            foreach(var element in enumerable)
+            {
+                if (!args.Contains(element))
+                {
+                    yield return element;
+                }
+            }
+        }
+
+        public static IEnumerable<T> WithoutElementsAt<T>(this IEnumerable<T> enumerable, params int[] indexes)
+        {
+            var index = 0;
+            foreach(var element in enumerable)
+            {
+                if (!indexes.Contains(index))
+                    yield return element;
+
+                index++;
+            }
+        }
+
+        public static IEnumerable<T> WithoutElements<T>(this IEnumerable<T> enumerable, params T[] elements)
+        {
+            var index = 0;
+            foreach(var element in enumerable)
+            {
+                if (!elements.Contains(element))
+                    yield return element;
+
+                index++;
+            }
+        }
+
+        public static int IndexOf<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T>
+        {
+            var index = 0;
+            foreach (var element in enumerable)
+            {
+                if (element.CompareTo(item) == 0)
+                {
+                    return index;
+                }
+                index++;
+            }
+
+            return -1;
+        }
 
         public static bool Is<T>(this IEnumerable<T> enumerable, params T[] args) where T : IComparable<T>
         {
