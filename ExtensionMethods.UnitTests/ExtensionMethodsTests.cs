@@ -1125,6 +1125,35 @@ namespace ExtensionMethods.UnitTests
 
         #region EnumerableExtensionMethods
         [TestMethod]
+        public void IfIndexOfIsCalledWithAnObjectThatIsPresentInTheCollection_ItShouldReturnTheCorrectIndex()
+        {
+            Assert.AreEqual(1, new int[] { 1, 2, 3, 4, 5 }.IndexOf(2));
+            Assert.AreEqual(4, new int[] { 1, 2, 3, 4, 5 }.IndexOf(5));
+        }
+
+        [TestMethod]
+        public void IfIndexOfIsCalledWithAnObjectThatIsNotPresentInTheCollection_ItShouldReturnMinusOne()
+        {
+            Assert.AreEqual(-1, new int[] { 1, 2, 3, 4, 5 }.IndexOf(99));
+        }
+
+        [TestMethod]
+        public void IfSkipIsCalled_ItShouldExcludeAllElementsInTheParamsArray()
+        {
+            Assert.IsTrue(new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 }.Skip(3, 4, 5).Is(1, 2, 6, 7, 8));
+            Assert.IsTrue(new List<int> { 1, 2, 3, 4 }.Skip().Is(1, 2, 3, 4));
+            Assert.IsTrue(new List<int>().Skip(1).Is());
+        }
+
+        [TestMethod]
+        public void IfWhereNextIsCalledOnAnEnumerable_ItShouldTakeElementsWhileTheFunctionReturnsTrue()
+        {
+            Assert.IsTrue(new List<int> { 99, 1, 98, 1, 97, 1 }.WhereNext(x => x == 1).Is(99, 98, 97));
+            Assert.IsTrue(new List<int> { 3, 4, 5 }.WhereNext(x => x >= 5).Is(4));
+            Assert.IsTrue(new List<int>().WhereNext(x => x < 5).Is());
+        }
+
+        [TestMethod]
         public void IfForIsCalledWithAnActionOfT_ItShouldCallThatActionForEveryElementOfTheEnumerable()
         {
             var hashSet = new HashSet<int>();
@@ -1551,37 +1580,124 @@ namespace ExtensionMethods.UnitTests
 
         #region DictionaryExtensionMethods
         [TestMethod]
-        public void IfIsIsCalledWithAMismatchedParamArray_ItShouldReturnFalse()
+        public void IfIsIsCalledWithAMismatchedParamsArray_ItShouldReturnFalse()
         {
-            var dict = new Dictionary<int, string>
-            {
-                [0] = "1",
-                [1] = "2"
-            };
-            Assert.IsFalse(dict.Is((0, "1"), (1, "fail")));
+            Assert.IsFalse(TestDictionary.Is((0, "1"), (1, "fail")));
         }
 
         [TestMethod]
-        public void IfIsIsCalledWithAnEquivalentParamArray_ItShouldReturnTrue()
+        public void IfIsIsCalledOnADictionaryWithAParamsArrayOfADifferentLength_ItShouldReturnFalse()
         {
-            var dict = new Dictionary<int, string>
-            {
-                [0] = "1",
-                [1] = "2"
-            };
-            Assert.IsTrue(dict.Is((0, "1"), (1, "2")));
+            Assert.IsFalse(TestDictionary.Is((1, "2")));
+        }
+
+        [TestMethod]
+        public void IfIsIsCalledWithAnEquivalentParamsArray_ItShouldReturnTrue()
+        {
+            Assert.IsTrue(TestDictionary.Is((0, "1"), (1, "2")));
         }
 
         [TestMethod]
         public void IfAsReadOnlyIsCalled_ItShouldReturnTheReadOnlyDictionaryEquivalent()
         {
-            var dict = new Dictionary<int, string> {
-                [0] = "Value1",
-                [1] = "Value2"
-            };
-            var dict2 = dict.AsReadOnly();
-            Assert.AreEqual("Value1", dict2[0]);
-            Assert.AreEqual("Value2", dict2[1]);
+            var dict2 = TestDictionary.AsReadOnly();
+            Assert.AreEqual("1", dict2[0]);
+            Assert.AreEqual("2", dict2[1]);
+        }
+
+        [TestMethod]
+        public void IfAddOrReturnIsCalledWithAKeyThatExists_ItShouldReturnFalse()
+        {
+            var @return = TestDictionary.AddOrReturn((0, "1"), out var result);
+            Assert.IsFalse(@return);
+            Assert.AreEqual("1", result);
+        }
+
+        [TestMethod]
+        public void IfAddOrReturnIsCalledWithAKeyThatDoesNotExist_ItShouldReturnTrue()
+        {
+            var @return = TestDictionary.AddOrReturn((2, "3"), out var result);
+            Assert.IsTrue(@return);
+            Assert.AreEqual("3", result);
+        }
+
+        [TestMethod]
+        public void IfContainsAllKeysIsCalledWithKeysThatExist_ItShouldReturnTrue()
+        {
+            Assert.IsTrue(TestDictionary.ContainsAllKeys(0, 1));
+        }
+
+        [TestMethod]
+        public void IfContainsAllKeysIsCalledWithKeysThatDoNotExist_ItShouldReturnFalse()
+        {
+            Assert.IsFalse(TestDictionary.ContainsAllKeys(1, 99));
+        }
+
+        [TestMethod]
+        public void IfContainsAnyKeyIsCalledWithAtLeastOneKeyThatExists_ItShouldReturnTrue()
+        {
+            Assert.IsTrue(TestDictionary.ContainsAnyKey(99, 0));
+        }
+
+        [TestMethod]
+        public void IfContainsAnyKeyIsCalledWithKeysThatDoNotExist_ItShouldReturnFalse()
+        {
+            Assert.IsFalse(TestDictionary.ContainsAnyKey(101, 99, 77));
+        }
+
+        [TestMethod]
+        public void IfContainsAnyIsCalledWithAtLeastOneKeyValuePairThatExistsInTheDictionary_ItShouldReturnTrue()
+        {
+            Assert.IsTrue(TestDictionary.ContainsAny((99, "45"), (3, "87"), (0, "1")));
+        }
+
+        [TestMethod]
+        public void IfContainsAnyIsCalledWithKeyValuePairsThatDoNotExistInTheDictionary_ItShouldReturnFalse()
+        {
+            Assert.IsFalse(TestDictionary.ContainsAny((99, "45"), (3, "87"), (65, "1")));
+        }
+
+        [TestMethod]
+        public void IfContainsAllIsCalledWithKeyValuePairsThatAllExistInTheDictionary_ItShouldReturnTrue()
+        {
+            Assert.IsTrue(TestDictionary.ContainsAll((0, "1"), (1, "2")));
+        }
+
+        [TestMethod]
+        public void IfContainsAllIsCalledWithKeyValuePairsThatDoNotAllExistInTheDictionary_ItShouldReturnFalse()
+        {
+            Assert.IsFalse(TestDictionary.ContainsAll((0, "1"), (1, "2"), (65, "1")));
+        }
+
+        [TestMethod]
+        public void IfToListIsCalledWithAKeyValuePairFunction_ItShouldReturnAListOfTheDestinationType()
+        {
+            var result = TestDictionary.ToList((kvp) =>
+                new DictionaryToListClass
+                {
+                    StringAutoProperty1 = kvp.Key.ToString(),
+                    StringAutoProperty2 = kvp.Value
+                });
+            Assert.AreEqual(2, result.Count());
+
+            var element = result.ElementAt(0);
+            var element2 = result.ElementAt(1);
+            Assert.AreEqual("0", element.StringAutoProperty1);
+            Assert.AreEqual("1", element.StringAutoProperty2);
+            Assert.AreEqual("1", element2.StringAutoProperty1);
+            Assert.AreEqual("2", element2.StringAutoProperty2);
+        }
+
+        private static IDictionary<int, string> TestDictionary => new Dictionary<int, string>
+        {
+            [0] = "1",
+            [1] = "2"
+        };
+
+        private class DictionaryToListClass {
+            public DictionaryToListClass() { }
+            public string StringAutoProperty1 { get; set; }
+            public string StringAutoProperty2 { get; set; }
         }
         #endregion
 

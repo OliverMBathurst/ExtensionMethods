@@ -113,6 +113,11 @@ namespace ExtensionMethods.EnumerableExtensionMethods
                 .Where(x => func(x.previous))
                 .Select(z => z.current);
 
+        public static IEnumerable<T> WhereNext<T>(this IEnumerable<T> enumerable, Func<T, bool> func) =>
+            enumerable.Zip(enumerable.Skip(1), (previous, current) => new { previous, current })
+                .Where(x => func(x.current))
+                .Select(z => z.previous);
+
         public static object FirstOrNull<T>(this IEnumerable<T> enumerable, Func<T, bool> func) where T : class
         {
             var firstOrDefault = enumerable.FirstOrDefault(func);
