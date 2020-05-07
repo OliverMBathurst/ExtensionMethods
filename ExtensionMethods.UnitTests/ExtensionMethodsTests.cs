@@ -11,6 +11,7 @@ using ExtensionMethods.ArrayExtensionMethods;
 using ExtensionMethods.RandomExtensionMethods;
 using ExtensionMethods.IntegerExtensionMethods;
 using ExtensionMethods.DictionaryExtensionMethods;
+using ExtensionMethods.CharExtensionMethods;
 
 namespace ExtensionMethods.UnitTests
 {
@@ -229,7 +230,7 @@ namespace ExtensionMethods.UnitTests
         public void IfIsInIsCalledWithACollectionItIsIn_ItShouldReturnTrue()
         {
             var obj = new TestType();
-            var list = new List<TestType>() { obj };            
+            var list = new List<TestType>() { obj };
             Assert.IsTrue(obj.IsIn(list));
         }
 
@@ -395,9 +396,9 @@ namespace ExtensionMethods.UnitTests
             {
                 "1q2d3".Parse<string, int>();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                if(ex.InnerException.GetType() == typeof(FormatException))
+                if (ex.InnerException.GetType() == typeof(FormatException))
                 {
                     passed = true;
                 }
@@ -452,7 +453,7 @@ namespace ExtensionMethods.UnitTests
             var testType = new TestType();
             var result = testType.Box();
 
-            if(!(result is TestType))
+            if (!(result is TestType))
             {
                 Assert.Fail();
             }
@@ -675,7 +676,7 @@ namespace ExtensionMethods.UnitTests
         {
             var list = new List<int> { 5, 5, 6, 7, 8, 9 };
             var result = list.InsertWhere(8, x => x == 5, true);
-            Assert.IsTrue(result.SequenceEqual(new List<int> { 8, 5, 8, 5, 6, 7, 8, 9}));
+            Assert.IsTrue(result.SequenceEqual(new List<int> { 8, 5, 8, 5, 6, 7, 8, 9 }));
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
@@ -1090,7 +1091,7 @@ namespace ExtensionMethods.UnitTests
         public void IfToIsCalledWithAToNumber_ItShouldReturnAllIntegersInThatRange()
         {
             var arr = 1.To(16);
-            for(var i = 1; i < 16; i++)
+            for (var i = 1; i < 16; i++)
                 Assert.IsTrue(arr[i - 1] == i);
 
             Assert.AreEqual(15, arr.Length);
@@ -1469,7 +1470,7 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfAddIsCalled_ItShouldAddTheGivenObjectAndReturnTheEnumerable()
         {
-            var list = new List<TestType>().Add<TestType>(new TestType { TestProperty = true });            
+            var list = new List<TestType>().Add<TestType>(new TestType { TestProperty = true });
             Assert.AreEqual(1, list.Count());
             Assert.IsTrue(list.All(x => x.TestProperty));
         }
@@ -1516,7 +1517,7 @@ namespace ExtensionMethods.UnitTests
         public void IfRandomWhereIsCalledOnAnEnumerable_ItShouldReturnARandomElementThatMatchesThePredicate()
         {
             Assert.IsTrue(new List<int> { 1, 2, 3, 4, 5 }.RandomWhere(x => x < 4).IsIn(1, 2, 3));
-            Assert.IsTrue(new List<int> { 3, 4, 5 }.RandomWhere(x => x >= 5).Is(5));            
+            Assert.IsTrue(new List<int> { 3, 4, 5 }.RandomWhere(x => x >= 5).Is(5));
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentOutOfRangeException))]
@@ -1688,6 +1689,75 @@ namespace ExtensionMethods.UnitTests
             Assert.AreEqual("2", element2.StringAutoProperty2);
         }
 
+        [TestMethod]
+        public void IfAddAllIsCalledWithAListAndFunctions_ItShouldAddAllElementsOfTheListToTheDictionary()
+        {
+            var dict = new Dictionary<string, string>();
+            var list = new List<DictionaryToListClass> {
+                new DictionaryToListClass { StringAutoProperty1 = "testItem1", StringAutoProperty2 = "testItem2" },
+                new DictionaryToListClass { StringAutoProperty1 = "testItem3", StringAutoProperty2 = "testItem4" }
+            };
+            dict.AddAll(list, x => x.StringAutoProperty1, x => x.StringAutoProperty2);
+            Assert.AreEqual("testItem2", dict["testItem1"]);
+            Assert.AreEqual("testItem4", dict["testItem3"]);
+        }
+
+        [TestMethod]
+        public void IfTryRemoveIsCalledWithAValueTupleThatDoesNotExistInTheDictionary_ItShouldReturnFalse()
+        {
+            var dict = TestDictionary;
+            Assert.IsFalse(dict.TryRemove((1, "33")));
+            Assert.AreEqual(2, dict.Count);
+        }
+
+        [TestMethod]
+        public void IfTryRemoveIsCalledWithAValueTupleThatDoesExistInTheDictionary_ItShouldReturnTrue()
+        {
+            var dict = TestDictionary;
+            Assert.IsTrue(dict.TryRemove((0, "1")));
+            Assert.AreEqual(1, dict.Count);
+        }
+
+        [TestMethod]
+        public void IfTryAddIsCalledWithAValueTupleThatDoesNotExistInTheDictionary_ItShouldReturnTrue()
+        {
+            var dict = TestDictionary;
+            Assert.IsTrue(dict.TryAdd((99, "33")));
+            Assert.AreEqual(3, dict.Count);
+        }
+
+        [TestMethod]
+        public void IfTryAddIsCalledWithAValueTupleThatDoesExistInTheDictionary_ItShouldReturnfalse()
+        {
+            var dict = TestDictionary;
+            Assert.IsFalse(dict.TryAdd((0, "1")));
+            Assert.AreEqual(2, dict.Count);
+        }
+
+        [TestMethod]
+        public void IfAsSortedIsCalled_ItShouldSortTheDictionary()
+        {
+            var dict = new Dictionary<int, string> { (1, "2"), (99, "66"), (0, "1"),  (101, "78")}.AsSorted();
+            Assert.IsTrue(dict.Is((0, "1"), (1, "2"), (99, "66"), (101, "78")));
+            Assert.AreEqual(4, dict.Count);
+        }
+
+        [TestMethod]
+        public void IfAsSortedIsCalledWithAComparer_ItShouldSortTheDictionary()
+        {
+            var dict = new Dictionary<int, string> { (1, "2"), (99, "66"), (0, "1"), (101, "78") }.AsSorted(new DictionaryComparer<int>());
+            Assert.IsTrue(dict.Is((0, "1"), (1, "2"), (99, "66"), (101, "78")));
+            Assert.AreEqual(4, dict.Count);
+        }
+
+        private class DictionaryComparer<T> : IComparer<T> where T : IComparable<T>
+        {
+            public int Compare(T x, T y)
+            {
+                return x.CompareTo(y);
+            }
+        }
+
         private static IDictionary<int, string> TestDictionary => new Dictionary<int, string>
         {
             [0] = "1",
@@ -1698,6 +1768,118 @@ namespace ExtensionMethods.UnitTests
             public DictionaryToListClass() { }
             public string StringAutoProperty1 { get; set; }
             public string StringAutoProperty2 { get; set; }
+        }
+        #endregion
+
+        #region CharExtensionMethods
+        [TestMethod]
+        public void IfIsDigitIsCalledWithADigit_ItShouldReturnTrue()
+        {
+            Assert.IsTrue('1'.IsDigit());
+        }
+
+        [TestMethod]
+        public void IfIsDigitIsCalledWithACharacter_ItShouldReturnFalse()
+        {
+            Assert.IsFalse('c'.IsDigit());
+        }
+
+        [TestMethod]
+        public void IfIsLetterIsCalledWithALetter_ItShouldReturnTrue()
+        {
+            Assert.IsTrue('e'.IsLetter());
+        }
+
+        [TestMethod]
+        public void IfIsLetterIsCalledWithADigit_ItShouldReturnFalse()
+        {
+            Assert.IsFalse('1'.IsLetter());
+        }
+
+        [TestMethod]
+        public void IfIsLetterOrDigitIsCalledWithALetterOrDigit_ItShouldReturnTrue()
+        {
+            Assert.IsTrue('e'.IsLetterOrDigit());
+            Assert.IsTrue('1'.IsLetterOrDigit());
+        }
+
+        [TestMethod]
+        public void IfIsLetterOrDigitIsCalledWithANonLetterSlashDigit_ItShouldReturnFalse()
+        {
+            Assert.IsFalse(']'.IsLetter());
+        }
+
+        [TestMethod]
+        public void IfToUpperIsCalled_ItShouldConvertTheCharacterToUppercase()
+        {
+            Assert.AreEqual('C', 'c'.ToUpper());
+            Assert.AreEqual('[', '['.ToUpper());
+            Assert.AreEqual('1', '1'.ToUpper());
+        }
+
+        [TestMethod]
+        public void IfToLowerIsCalled_ItShouldConvertTheCharacterToLowercase()
+        {
+            Assert.AreEqual('c', 'C'.ToLower());
+            Assert.AreEqual('[', '['.ToLower());
+            Assert.AreEqual('1', '1'.ToLower());
+        }
+
+        [TestMethod]
+        public void IfRepeatIsCalled_ItShouldRepeatTheCharacterNTimes()
+        {
+            Assert.AreEqual("ccc", 'c'.Repeat(3));            
+            Assert.AreEqual("[[[", '['.Repeat(3));
+            Assert.AreEqual("11111", '1'.Repeat(5));
+            Assert.AreNotEqual("tt", 'T'.Repeat(2));
+        }
+
+        [TestMethod]
+        public void IfIsWhitespaceIsCalledWithWhitespace_ItShouldReturnTrue()
+        {
+            Assert.IsTrue(' '.IsWhiteSpace());
+        }
+
+        [TestMethod]
+        public void IfIsWhitespaceIsCalledWithNonWhitespace_ItShouldReturnFalse()
+        {
+            Assert.IsFalse('v'.IsWhiteSpace());
+        }
+
+        [TestMethod]
+        public void IfIsUpperIsCalledWithAnUppercaseChar_ItShouldReturnTrue()
+        {
+            Assert.IsTrue('F'.IsUpper());
+        }
+
+        [TestMethod]
+        public void IfIsUpperIsCalledWithALowercaseChar_ItShouldReturnFalse()
+        {
+            Assert.IsFalse('v'.IsUpper());
+        }
+
+        [TestMethod]
+        public void IfIsNumberIsCalledWithANumber_ItShouldReturnTrue()
+        {
+            Assert.IsTrue('1'.IsNumber());
+        }
+
+        [TestMethod]
+        public void IfIsNumberIsCalledWithANonNumber_ItShouldReturnFalse()
+        {
+            Assert.IsFalse('o'.IsNumber());
+        }
+
+        [TestMethod]
+        public void IfIsLowerIsCalledWithALowercaseChar_ItShouldReturnTrue()
+        {
+            Assert.IsTrue('f'.IsLower());
+        }
+
+        [TestMethod]
+        public void IfIsLowerIsCalledWithAnUppercaseChar_ItShouldReturnFalse()
+        {
+            Assert.IsFalse('R'.IsLower());
         }
         #endregion
 
