@@ -16,6 +16,8 @@ namespace ExtensionMethods.StringExtensionMethods
 
         public static string Format(this string str, params object[] args) => string.Format(str, args);
 
+        public static string TrimAll(this string str) => str.TrimEnd().TrimStart();
+
         public static string Repeat(this string str, int n)
         {            
             var strBuilder = new StringBuilder(str.Length * n);
