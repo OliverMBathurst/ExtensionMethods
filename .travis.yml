@@ -1,2 +1,2 @@
 language: csharp
-solution: .\ExtensionMethods\ExtensionMethods.sln
+solution: ExtensionMethods\ExtensionMethods.sln
