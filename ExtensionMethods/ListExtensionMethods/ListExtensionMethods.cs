@@ -76,9 +76,21 @@ namespace ExtensionMethods.ListExtensionMethods
                 list.Add((T)Activator.CreateInstance(typeof(T)));
         }
 
+        public static void AddN<T, S>(this IList<T> list, int n) where S : T
+        {
+            for (var i = 0; i < n; i++)
+                list.Add((S)Activator.CreateInstance(typeof(S)));
+        }
+
         public static IList<T> ChainableAddN<T>(this IList<T> list, int n)
         {
             AddN(list, n);
+            return list;
+        }
+
+        public static IList<T> ChainableAddN<T, S>(this IList<T> list, int n) where S : T
+        {
+            AddN<T, S>(list, n);
             return list;
         }
 
