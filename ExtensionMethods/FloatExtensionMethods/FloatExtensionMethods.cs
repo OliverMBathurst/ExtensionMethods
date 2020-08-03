@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ExtensionMethods.FloatExtensionMethods
+﻿namespace ExtensionMethods.FloatExtensionMethods
 {
     public static class FloatExtensionMethods
     {

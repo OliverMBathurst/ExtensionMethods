@@ -8,7 +8,8 @@ namespace ExtensionMethods.ListExtensionMethods
         #region For extension methods
         public static void For<T>(this IList<T> list, Action<T> action)
         {
-            for (var i = 0; i < list.Count; i++) action(list[i]);
+            foreach (var t in list)
+                action(t);
         }
 
         public static void For<T>(this IList<T> list, Action<int> action)
@@ -28,25 +29,25 @@ namespace ExtensionMethods.ListExtensionMethods
 
         public static IList<T> ForAndReturn<T>(this IList<T> list, Action<T> action)
         {
-            list.For((element) => action(element));
+            list.For(action);
             return list;
         }
 
         public static IList<T> ForAndReturn<T>(this IList<T> list, Action<int> action)
         {
-            list.For((i) => action(i));
+            list.For(action);
             return list;
         }
 
         public static IList<T> ForAndReturn<T>(this IList<T> list, Action<T, int> action)
         {
-            list.For((element, index) => action(element, index));
+            list.For(action);
             return list;
         }
 
         public static IList<T> ForAndReturn<T>(this IList<T> list, Action<IList<T>, int> action)
         {
-            list.For((l, index) => action(l, index));
+            list.For(action);
             return list;
         }
         #endregion
@@ -76,10 +77,10 @@ namespace ExtensionMethods.ListExtensionMethods
                 list.Add((T)Activator.CreateInstance(typeof(T)));
         }
 
-        public static void AddN<T, S>(this IList<T> list, int n) where S : T
+        public static void AddN<T, TS>(this IList<T> list, int n) where TS : T
         {
             for (var i = 0; i < n; i++)
-                list.Add((S)Activator.CreateInstance(typeof(S)));
+                list.Add((TS)Activator.CreateInstance(typeof(TS)));
         }
 
         public static IList<T> ChainableAddN<T>(this IList<T> list, int n)
@@ -88,9 +89,9 @@ namespace ExtensionMethods.ListExtensionMethods
             return list;
         }
 
-        public static IList<T> ChainableAddN<T, S>(this IList<T> list, int n) where S : T
+        public static IList<T> ChainableAddN<T, TS>(this IList<T> list, int n) where TS : T
         {
-            AddN<T, S>(list, n);
+            AddN<T, TS>(list, n);
             return list;
         }
 
@@ -103,11 +104,9 @@ namespace ExtensionMethods.ListExtensionMethods
 
             for (var i = 0; i < list.Count; i++)
             {
-                if (item.CompareTo(list[i]) < 0)
-                {
-                    list.Insert(i, item);
-                    return;
-                }
+                if (item.CompareTo(list[i]) >= 0) continue;
+                list.Insert(i, item);
+                return;
             }
             
             list.Add(item);
@@ -122,11 +121,9 @@ namespace ExtensionMethods.ListExtensionMethods
 
             for (var i = 0; i < list.Count; i++)
             {
-                if (comparison(item, list[i]) < 0)
-                {
-                    list.Insert(i, item);
-                    return;
-                }
+                if (comparison(item, list[i]) >= 0) continue;
+                list.Insert(i, item);
+                return;
             }
             
             list.Add(item);            
@@ -141,11 +138,9 @@ namespace ExtensionMethods.ListExtensionMethods
 
             for (var i = 0; i < list.Count; i++)
             {
-                if (comparer.Compare(item, list[i]) < 0)
-                {
-                    list.Insert(i, item);
-                    return;
-                }
+                if (comparer.Compare(item, list[i]) >= 0) continue;
+                list.Insert(i, item);
+                return;
             }
             
             list.Add(item);            

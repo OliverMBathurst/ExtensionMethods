@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace ExtensionMethods.Classes
 {
-    public class ConcurrentIterable<T, C>
+    public class ConcurrentIterable<T, T2>
     {
-        public ConcurrentIterable(IEnumerable<T> collection, IEnumerable<C> collectionTwo)
+        public ConcurrentIterable(IEnumerable<T> collection, IEnumerable<T2> collectionTwo)
         {
             if (collection.Count() != collectionTwo.Count())
                 throw new ArgumentException("Collections are not of the same length.");
@@ -14,9 +14,9 @@ namespace ExtensionMethods.Classes
             CollectionTwo = collectionTwo.ToArray();
         }
 
-        public T[] CollectionOne { get; private set; }
+        public T[] CollectionOne { get; }
 
-        public C[] CollectionTwo { get; private set; }
+        public T2[] CollectionTwo { get; }
 
         public int Index { get; private set; }
 
@@ -24,17 +24,17 @@ namespace ExtensionMethods.Classes
 
         public bool HasPrevious => Index > 0;
 
-        public bool IsEmpty => CollectionOne.Count() == 0;
+        public bool IsEmpty => !CollectionOne.Any();
 
-        public (T, C) First => (CollectionOne.First(), CollectionTwo.First());
+        public (T, T2) First => (CollectionOne.First(), CollectionTwo.First());
 
-        public (T, C) Last => (CollectionOne.Last(), CollectionTwo.Last());
+        public (T, T2) Last => (CollectionOne.Last(), CollectionTwo.Last());
 
-        public (T, C) Previous => (CollectionOne[Index - 1], CollectionTwo[Index - 1]);
+        public (T, T2) Previous => (CollectionOne[Index - 1], CollectionTwo[Index - 1]);
 
-        public (T, C) Next()
+        public (T, T2) Next()
         {
-            (T,C) @return;
+            (T, T2) @return;
 
             if (Index == 0 && !IsEmpty)
                 @return = First;
@@ -42,15 +42,15 @@ namespace ExtensionMethods.Classes
                 if (HasNext)
                     @return = CollectionsTuple;
                 else
-                    throw new ArgumentOutOfRangeException("No element next in the collection.");
+                    throw new ArgumentOutOfRangeException();
 
             Index++;
             return @return;
         }
 
-        public bool GetNext(out (T, C) result)
+        public bool GetNext(out (T, T2) result)
         {
-            result = (default(T), default(C));
+            result = (default, default);
             try
             {
                 result = Next();
@@ -61,16 +61,13 @@ namespace ExtensionMethods.Classes
             return false;
         }
 
-        public bool GetPrevious(out (T, C) result)
+        public bool GetPrevious(out (T, T2) result)
         {
-            result = (default(T), default(C));
-            if(HasPrevious)
-            {
-                result = Previous;
-                return true;
-            }
+            result = (default, default);
+            if (!HasPrevious) return false;
 
-            return false;
+            result = Previous;
+            return true;
         }
 
         public bool SetIndex(int index)
@@ -82,12 +79,8 @@ namespace ExtensionMethods.Classes
             return true;
         }
 
-        public IEnumerable<(T, C)> AsEnumerable()
-        {
-            for(var i = 0; i < CollectionOne.Length; i++)
-                yield return (CollectionOne[i], CollectionTwo[i]);
-        }
+        public IEnumerable<(T, T2)> AsEnumerable() => CollectionOne.Select((t, i) => (t, CollectionTwo[i]));
 
-        private (T, C) CollectionsTuple => (CollectionOne[Index], CollectionTwo[Index]);
+        private (T, T2) CollectionsTuple => (CollectionOne[Index], CollectionTwo[Index]);
     }
 }

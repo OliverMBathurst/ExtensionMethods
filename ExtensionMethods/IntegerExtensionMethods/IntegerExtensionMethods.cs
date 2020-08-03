@@ -18,10 +18,7 @@ namespace ExtensionMethods.IntegerExtensionMethods
 
         public static void ForFromZero(this int current, Action<int> action)
         {
-            var ascending = true;
-            if (current < 0)
-                ascending = false;
-
+            var ascending = !(current < 0);
             for(var i = 0; i < Math.Abs(current); i++)
                 action(ascending ? i : -i);
         }

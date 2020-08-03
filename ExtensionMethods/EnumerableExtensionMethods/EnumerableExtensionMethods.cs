@@ -42,25 +42,25 @@ namespace ExtensionMethods.EnumerableExtensionMethods
         #region For and return extension methods
         public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
-            enumerable.For((element) => action(element));
+            enumerable.For(action);
             return enumerable;
         }
 
         public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<int> action)
         {
-            enumerable.For((i) => action(i));
+            enumerable.For(action);
             return enumerable;
         }
 
         public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<T, int> action)
         {
-            enumerable.For((element, i) => action(element, i));
+            enumerable.For(action);
             return enumerable;
         }
 
         public static IEnumerable<T> ForAndReturn<T>(this IEnumerable<T> enumerable, Action<IEnumerable<T>, int> action)
         {
-            enumerable.For((enumer, i) => action(enumer, i));
+            enumerable.For(action);
             return enumerable;
         }
         #endregion
@@ -87,13 +87,13 @@ namespace ExtensionMethods.EnumerableExtensionMethods
 
         public static bool AreAllTheSame<T>(this IEnumerable<T> enumerable) where T: IComparable<T> => AllTheSame(enumerable);
 
-        public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable) => enumerable == null || enumerable.Count() == 0 ? true : false;
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable) => enumerable == null || !enumerable.Any();
 
         public static T Random<T>(this IEnumerable<T> enumerable) => enumerable.ElementAt(new Random().Next(enumerable.Count() - 1));
 
-        public static T RandomWhere<T>(this IEnumerable<T> enumerable, Func<T, bool> func) => enumerable.Where(x => func(x)).Random();
+        public static T RandomWhere<T>(this IEnumerable<T> enumerable, Func<T, bool> func) => enumerable.Where(func).Random();
 
-        public static bool IsEmpty<T>(this IEnumerable<T> enumerable) => enumerable.Count() == 0;
+        public static bool IsEmpty<T>(this IEnumerable<T> enumerable) => !enumerable.Any();
 
         public static IEnumerable<T> FillWith<T>(this IEnumerable<T> enumerable, T item) => enumerable.ToArray().ForAndReturn((e, i) => e[i] = item);
 
@@ -118,11 +118,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
                 .Where(x => func(x.current))
                 .Select(z => z.previous);
 
-        public static object FirstOrNull<T>(this IEnumerable<T> enumerable, Func<T, bool> func) where T : class
-        {
-            var firstOrDefault = enumerable.FirstOrDefault(func);
-            return firstOrDefault == default ? null : firstOrDefault.Box();
-        }
+        public static object FirstOrNull<T>(this IEnumerable<T> enumerable, Func<T, bool> func) where T : class => enumerable.FirstOrDefault(func)?.Box();
 
         public static IEnumerable<T> AddN<T>(this IEnumerable<T> enumerable, int n)
         {
@@ -132,24 +128,15 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             return list;
         }
 
-        public static IEnumerable<T> ReplaceAll<T>(this IEnumerable<T> enumerable, T itemtoReplace, T replacementItem) where T : IComparable<T>
+        public static IEnumerable<T> ReplaceAll<T>(this IEnumerable<T> enumerable, T itemToReplace, T replacementItem) where T : IComparable<T>
         =>
             enumerable.ToArray().ForAndReturn((array, index) =>
             {
-                if (array[index].CompareTo(itemtoReplace) == 0)
+                if (array[index].CompareTo(itemToReplace) == 0)
                     array[index] = replacementItem;
             });
 
-        public static IEnumerable<T> Skip<T>(this IEnumerable<T> enumerable, params T[] args)
-        {
-            foreach(var element in enumerable)
-            {
-                if (!args.Contains(element))
-                {
-                    yield return element;
-                }
-            }
-        }
+        public static IEnumerable<T> Skip<T>(this IEnumerable<T> enumerable, params T[] args) => enumerable.Where(element => !args.Contains(element));
 
         public static IEnumerable<T> WithoutElementsAt<T>(this IEnumerable<T> enumerable, params int[] indexes)
         {
@@ -163,17 +150,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             }
         }
 
-        public static IEnumerable<T> WithoutElements<T>(this IEnumerable<T> enumerable, params T[] elements)
-        {
-            var index = 0;
-            foreach(var element in enumerable)
-            {
-                if (!elements.Contains(element))
-                    yield return element;
-
-                index++;
-            }
-        }
+        public static IEnumerable<T> WithoutElements<T>(this IEnumerable<T> enumerable, params T[] elements) => enumerable.Where(element => !elements.Contains(element));
 
         public static int IndexOf<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T>
         {
@@ -196,49 +173,24 @@ namespace ExtensionMethods.EnumerableExtensionMethods
                 return false;
 
             var iterable = new ConcurrentIterable<T, T>(enumerable.ToArray(), args).AsEnumerable();
-            foreach (var tuple in iterable)
-                if (tuple.Item1.CompareTo(tuple.Item2) != 0)
-                    return false;
-            return true;
+            return iterable.All(tuple => tuple.Item1.CompareTo(tuple.Item2) == 0);
         }
 
-        public static IEnumerable<T> Replace<T>(this IEnumerable<T> enumerable, T itemtoReplace, T replacementItem) where T : IComparable<T>
+        public static IEnumerable<T> Replace<T>(this IEnumerable<T> enumerable, T itemToReplace, T replacementItem) where T : IComparable<T>
         {
             var array = enumerable.ToArray();
             for (var i = 0; i < array.Length; i++)
             {
-                if (array[i].CompareTo(itemtoReplace) == 0)
-                {
-                    array[i] = replacementItem;
-                    return array;
-                }
+                if (array[i].CompareTo(itemToReplace) != 0) continue;
+                array[i] = replacementItem;
+                return array;
             }
             return array;
         }
 
-        public static IEnumerable<T> RemoveWhile<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
-        {
-            var count = 0;
-            foreach(var element in enumerable)
-            {
-                if (!predicate(element))
-                    break;
+        public static IEnumerable<T> RemoveWhile<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate) => enumerable.Skip(enumerable.TakeWhile(predicate).Count());
 
-                count++;
-            }
-            return enumerable.Skip(count);
-        }
-
-        public static IEnumerable<T> RemoveAll<T>(this IEnumerable<T> enumerable, Func<T, bool> func)
-        {
-            foreach(var element in enumerable)
-            {
-                if (!func(element))
-                {
-                    yield return element;
-                }
-            }
-        }
+        public static IEnumerable<T> RemoveAll<T>(this IEnumerable<T> enumerable, Func<T, bool> func) => enumerable.Where(element => !func(element));
 
         public static IEnumerable<int> AllIndexesOf<T>(this IEnumerable<T> enumerable, T item) where T : IComparable<T>
         {
@@ -253,11 +205,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             }
         }
 
-        public static IEnumerable<T> ReplaceAll<T>(this IEnumerable<T> enumerable, Func<T, bool> func, T item)
-        {
-            foreach(var element in enumerable)
-                yield return func(element) ? item : element;
-        }
+        public static IEnumerable<T> ReplaceAll<T>(this IEnumerable<T> enumerable, Func<T, bool> func, T item) => enumerable.Select(element => func(element) ? item : element);
 
         public static IEnumerable<IList<T>> Split<T>(this IEnumerable<T> enumerable, int n)
         {
@@ -294,10 +242,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             if (enumerable.Count() < 2)
                 return enumerable;
             var result = enumerable.OrderBy(t => r.Next()).ToList();
-            if (!result.SequenceEqual(enumerable))
-                return result;
-            else
-                return InternalShuffle(enumerable, r);
+            return !result.SequenceEqual(enumerable) ? result : InternalShuffle(enumerable, r);
         }
 
         [ExcludeFromCodeCoverage]
@@ -310,10 +255,7 @@ namespace ExtensionMethods.EnumerableExtensionMethods
                 return true;
 
             var comparison = enumerable.First();
-            foreach(var element in enumerable.Skip(1))
-                if (element.CompareTo(comparison) != 0)
-                    return false;
-            return true;
+            return enumerable.Skip(1).All(element => element.CompareTo(comparison) == 0);
         }
     }
 }

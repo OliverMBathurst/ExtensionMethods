@@ -7,7 +7,8 @@ namespace ExtensionMethods.ArrayExtensionMethods
         #region For extension methods
         public static void For<T>(this T[] array, Action<T> action)
         {
-            for (var i = 0; i < array.Length; i++) action(array[i]);
+            foreach (var t in array)
+                action(t);
         }
 
         public static void For<T>(this T[] array, Action<int> action)
@@ -27,13 +28,13 @@ namespace ExtensionMethods.ArrayExtensionMethods
 
         public static T[] ForAndReturn<T>(this T[] array, Action<T> action)
         {
-            array.For((element) => action(element));
+            array.For(action);
             return array;
         }
 
         public static T[] ForAndReturn<T>(this T[] array, Action<int> action)
         {
-            array.For((i) => action(i));
+            array.For(action);
             return array;
         }
 
@@ -45,7 +46,7 @@ namespace ExtensionMethods.ArrayExtensionMethods
 
         public static T[] ForAndReturn<T>(this T[] array, Action<T[], int> action)
         {
-            array.For((arr, i) => action(arr, i));
+            array.For(action);
             return array;
         }
         #endregion
@@ -61,15 +62,14 @@ namespace ExtensionMethods.ArrayExtensionMethods
             if(array == null)
                 throw new ArgumentNullException(nameof(T));
 
-            if(array.Length > 1)
+            if (array.Length <= 1) return;
+
+            var tmp = array[0];
+            for(var i = 0; i < array.Length - 1; i++)
             {
-                var tmp = array[0];
-                for(var i = 0; i < array.Length - 1; i++)
-                {
-                    array[i] = array[i + 1];
-                }
-                array[array.Length - 1] = tmp;
-            }            
+                array[i] = array[i + 1];
+            }
+            array[array.Length - 1] = tmp;
         }
 
         public static void RightRotate<T>(this T[] array)
@@ -77,15 +77,14 @@ namespace ExtensionMethods.ArrayExtensionMethods
             if (array == null)
                 throw new ArgumentNullException(nameof(T));
 
-            if (array.Length > 1)
+            if (array.Length <= 1) return;
+
+            var tmp = array[array.Length - 1];
+            for (var i = array.Length - 1; i > 0; i--)
             {
-                var tmp = array[array.Length - 1];
-                for (var i = array.Length - 1; i > 0; i--)
-                {
-                    array[i] = array[i - 1];
-                }
-                array[0] = tmp;
+                array[i] = array[i - 1];
             }
+            array[0] = tmp;
         }
 
         public static bool AreAllTheSame<T>(this T[] array) where T : IComparable<T>

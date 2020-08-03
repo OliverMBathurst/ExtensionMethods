@@ -16,15 +16,15 @@ namespace ExtensionMethods.GenericExtensionMethods
 
         public static bool IsIn<T>(this T obj, IEnumerable<T> enumerable) => enumerable.Contains(obj);
 
-        public static C Parse<T, C>(this T obj) => (C)TypeDescriptor.GetConverter(typeof(C)).ConvertFrom(obj);
+        public static TC Parse<T, TC>(this T obj) => (TC)TypeDescriptor.GetConverter(typeof(TC)).ConvertFrom(obj);
 
-        public static object NullIfDefault<T>(this T obj) where T : class => obj == default ? null : obj;
+        public static object NullIfDefault<T>(this T obj) where T : class => obj;
 
-        public static string ToMD5Hash<T>(this T obj) => BitConverter.ToString(new MD5CryptoServiceProvider().ComputeHash(GetBytes(obj)));
+        public static string ToMd5Hash<T>(this T obj) => BitConverter.ToString(new MD5CryptoServiceProvider().ComputeHash(GetBytes(obj)));
 
         public static bool IsDefault<T>(this T obj) where T : class => obj == default;
 
-        public static object Box<T>(this T obj) => (object)obj;
+        public static object Box<T>(this T obj) => obj;
 
         public static T Unbox<T>(this object obj) => (T)obj;
 

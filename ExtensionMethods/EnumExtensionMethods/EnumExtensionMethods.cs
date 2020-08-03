@@ -12,8 +12,8 @@ namespace ExtensionMethods.EnumExtensionMethods
             if (!typeof(T).IsEnum)
                 return dict;
 
-            foreach (var result in new ConcurrentIterable<string, T>(Enum.GetNames(typeof(T)), (T[])Enum.GetValues(typeof(T))).AsEnumerable())
-                dict.Add(result.Item1, result.Item2);
+            foreach (var (item1, item2) in new ConcurrentIterable<string, T>(Enum.GetNames(typeof(T)), (T[])Enum.GetValues(typeof(T))).AsEnumerable())
+                dict.Add(item1, item2);
 
             return dict;
         }

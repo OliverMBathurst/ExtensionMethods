@@ -99,7 +99,7 @@ namespace ExtensionMethods.UnitTests
         public void IfOrIsCalledWithTrueAndFalseBooleanObjects_ItShouldReturnTrue()
         {
             const bool a = 1 == 2;
-            const bool b = 1 == 1;
+            const bool b = true;
             Assert.IsTrue(a.Or(b));
         }
 
@@ -114,7 +114,7 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfAndIsCalledWithTrueAndFalseBooleanObjects_ItShouldReturnFalse()
         {
-            const bool a = 1 == 1;
+            const bool a = true;
             const bool b = 1 == 3;
             Assert.IsFalse(a.And(b));
         }
@@ -122,8 +122,8 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfAndIsCalledWithTrueAndTrueBooleanObjects_ItShouldReturnTrue()
         {
-            const bool a = 1 == 1;
-            const bool b = 3 == 3;
+            const bool a = true;
+            const bool b = true;
             Assert.IsTrue(a.And(b));
         }
         #endregion
@@ -133,8 +133,8 @@ namespace ExtensionMethods.UnitTests
         public void IfAnObjectIsOfTypeT_ItShouldCallTheActionWithTheObject()
         {
             var hasCalled = false;
-            Action<TestType> action = (t) => hasCalled = true;
-            new TestType().IfType(action);
+            void Action(TestType t) => hasCalled = true;
+            new TestType().IfType((Action<TestType>) Action);
             if (!hasCalled)
                 Assert.Fail();
         }
@@ -143,8 +143,8 @@ namespace ExtensionMethods.UnitTests
         public void IfAnObjectIsNotOfTypeT_ItShouldNotCallTheActionWithTheObject()
         {
             var hasCalled = false;
-            Action<TestType2> action = (t) => hasCalled = true;
-            new TestType().IfType(action);
+            void Action(TestType2 t) => hasCalled = true;
+            new TestType().IfType((Action<TestType2>) Action);
             if (hasCalled)
                 Assert.Fail();
         }
@@ -153,8 +153,8 @@ namespace ExtensionMethods.UnitTests
         public void IfAnObjectIsNotOfTypeT_ItShouldNotCallTheAction()
         {
             var hasCalled = false;
-            Action action = () => hasCalled = true;
-            new TestType().IfType<TestType2>(action);
+            void Action() => hasCalled = true;
+            new TestType().IfType<TestType2>(Action);
             if (hasCalled)
                 Assert.Fail();
         }
@@ -163,8 +163,8 @@ namespace ExtensionMethods.UnitTests
         public void IfAnObjectIsOfTypeT_ItShouldCallTheAction()
         {
             var hasCalled = false;
-            Action action = () => hasCalled = true;
-            new TestType().IfType<TestType>(action);
+            void Action() => hasCalled = true;
+            new TestType().IfType<TestType>(Action);
             if (!hasCalled)
                 Assert.Fail();
         }
@@ -174,8 +174,8 @@ namespace ExtensionMethods.UnitTests
         {
             var hasCalled = false;
             TestType testType = null;
-            Action<TestType> action = (t) => hasCalled = true;
-            testType.IfNotNull(action);
+            void Action(TestType t) => hasCalled = true;
+            testType.IfNotNull(Action);
             if (hasCalled)
                 Assert.Fail();
         }
@@ -185,8 +185,8 @@ namespace ExtensionMethods.UnitTests
         {
             var hasCalled = false;
             var testType = new TestType();
-            Action<TestType> action = (t) => hasCalled = true;
-            testType.IfNotNull(action);
+            void Action(TestType t) => hasCalled = true;
+            testType.IfNotNull(Action);
             if (!hasCalled)
                 Assert.Fail();
         }
@@ -201,7 +201,7 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfIsNullableIsCalledWithANonNullableObject_ItShouldReturnFalse()
         {
-            int obj = 1;
+            const int obj = 1;
             Assert.IsFalse(obj.IsNullable());
         }
 
@@ -508,7 +508,7 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfGetBytesIsCalledWithAValidObject_ItShouldReturnTheCorrectBytes()
         {
-            var @string = "test123";
+            const string @string = "test123";
             var result = @string.GetBytes();
             Assert.AreEqual(31, result.Length);
             Assert.IsTrue(result.Is<byte>(0, 1, 0, 0, 0, 255, 255, 255, 255, 1, 0, 0, 0, 0, 0, 0, 0, 6, 1, 0, 0, 0, 7, 116, 101, 115, 116, 49, 50, 51, 11));
@@ -518,13 +518,13 @@ namespace ExtensionMethods.UnitTests
         public void IfToMD5HashIsCalledWithANullObject_ItShouldThrowAnException()
         {
             TestType obj = null;
-            obj.ToMD5Hash();
+            obj.ToMd5Hash();
         }
 
         [TestMethod]
         public void IfToMD5HashIsCalledWithANonNullObject_ItShouldReturnTheMD5Hash()
         {
-            Assert.AreEqual("16-E5-F3-3C-2B-BB-D2-80-51-E9-EF-B4-0C-1A-72-A3", "test string".ToMD5Hash());
+            Assert.AreEqual("16-E5-F3-3C-2B-BB-D2-80-51-E9-EF-B4-0C-1A-72-A3", "test string".ToMd5Hash());
         }
 
         #endregion
@@ -648,7 +648,7 @@ namespace ExtensionMethods.UnitTests
         public void IfInsertSortedIsCalledWithAnElementAndAComparator_ItShouldAddTheElementAtTheRightPositionOfTheSortedList()
         {
             var list = new List<int> { 5, 6, 7, 9, 10 };
-            list.InsertSorted(8, new Comparison<int>((x, y) => x.CompareTo(y)));
+            list.InsertSorted(8, (x, y) => x.CompareTo(y));
             Assert.AreEqual(6, list.Count);
             Assert.AreEqual(8, list.ElementAt(3));
         }
@@ -657,7 +657,7 @@ namespace ExtensionMethods.UnitTests
         public void IfInsertSortedIsCalledWithAnElementAndAComparator_ItShouldAddTheElementAtTheRightPositionOfTheEmptyList()
         {
             var list = new List<int>();
-            list.InsertSorted(8, new Comparison<int>((x, y) => x.CompareTo(y)));
+            list.InsertSorted(8, (x, y) => x.CompareTo(y));
             Assert.AreEqual(1, list.Count);
             Assert.AreEqual(8, list.First());
         }
@@ -696,7 +696,7 @@ namespace ExtensionMethods.UnitTests
         public void IfInsertSortedIsCalledWithAComparison_ItShouldInsertAccordingly()
         {
             var list = new List<TestType> { new TestType { TestProperty = true } };
-            list.InsertSorted(new TestType(), new Comparison<TestType>((x, y) => x.CompareTo(y)));
+            list.InsertSorted(new TestType(), (x, y) => x.CompareTo(y));
             Assert.AreEqual(2, list.Count);
             Assert.IsTrue(list[1].TestProperty);
         }
@@ -705,14 +705,14 @@ namespace ExtensionMethods.UnitTests
         public void IfInsertSortedIsCalledWithANullItem_ItShouldThrowAnException()
         {
             var list = new List<TestType>();
-            list.InsertSorted(null, new Comparison<TestType>((x, y) => x.CompareTo(y)));
+            list.InsertSorted(null, (x, y) => x.CompareTo(y));
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
         public void IfInsertSortedIsCalledWithANullList_ItShouldThrowAnException()
         {
             List<TestType> list = null;
-            list.InsertSorted(new TestType(), new Comparison<TestType>((x, y) => x.CompareTo(y)));
+            list.InsertSorted(new TestType(), (x, y) => x.CompareTo(y));
         }
 
         [TestMethod]
@@ -836,7 +836,7 @@ namespace ExtensionMethods.UnitTests
         public void IfForIsCalledWithAnActionOfT_ItShouldCallThatActionForEveryElementOfTheArray()
         {
             var list = new List<int>();
-            new int[] { 1, 2, 3, 4, 5 }.For((element) => list.Add(element));
+            new[] { 1, 2, 3, 4, 5 }.For((element) => list.Add(element));
             Assert.IsTrue(list.Is(0, 1, 2, 3, 4));
         }
 
@@ -844,7 +844,7 @@ namespace ExtensionMethods.UnitTests
         public void IfForIsCalledWithAnActionOfInt_ItShouldCallThatActionForEveryIndexOfTheArray()
         {
             var list = new List<int>();
-            new int[] { 1, 2, 3, 4, 5 }.For((i) => list.Add(i));
+            new[] { 1, 2, 3, 4, 5 }.For((i) => list.Add(i));
             Assert.IsTrue(list.Is(0, 1, 2, 3, 4));
         }
 
@@ -852,7 +852,7 @@ namespace ExtensionMethods.UnitTests
         public void IfForIsCalledWithAnActionOfTAndInt_ItShouldCallThatActionForEveryElementOfTheArray()
         {
             var dict = new Dictionary<int, int>();
-            new int[] { 1, 2, 3, 4, 5 }.For((element, index) => dict.Add(index, element));
+            new[] { 1, 2, 3, 4, 5 }.For((element, index) => dict.Add(index, element));
             Assert.IsTrue(dict.Is((0, 1), (1, 2), (2, 3), (3, 4), (4, 5)));
         }
 
@@ -860,7 +860,7 @@ namespace ExtensionMethods.UnitTests
         public void IfForIsCalledWithAnActionOfTArrayAndInt_ItShouldCallThatActionForEveryElementOfTheArray()
         {
             var list = new List<int>();
-            new int[] { 1, 2, 3, 4, 5 }.For((arr, i) => list.Add(arr.Length + i));
+            new[] { 1, 2, 3, 4, 5 }.For((arr, i) => list.Add(arr.Length + i));
             Assert.IsTrue(list.Is(5, 6, 7, 8, 9));
         }
 
@@ -868,7 +868,7 @@ namespace ExtensionMethods.UnitTests
         public void IfForIsCalledWithAnActionOfT_ItShouldCallThatActionForEveryElementOfTheArray_AndReturnTheArray()
         {
             var list = new List<TestType>();
-            var returned = new TestType[] { new TestType { TestProperty = true } }.ForAndReturn((element) => list.Add(element));
+            var returned = new[] { new TestType { TestProperty = true } }.ForAndReturn((element) => list.Add(element));
             Assert.IsTrue(list.First().TestProperty);
             Assert.IsTrue(returned.First().TestProperty);
         }
@@ -877,7 +877,7 @@ namespace ExtensionMethods.UnitTests
         public void IfForIsCalledWithAnActionOfInt_ItShouldCallThatActionForEveryIndexOfTheArray_AndReturnTheArray()
         {
             var list = new List<int>();
-            var returned = new int[] { 1, 2, 3, 4, 5 }.ForAndReturn((element) => list.Add(element));
+            var returned = new[] { 1, 2, 3, 4, 5 }.ForAndReturn((element) => list.Add(element));
             Assert.IsTrue(list.Is(0, 1, 2, 3, 4));
             Assert.IsTrue(returned.Is(1, 2, 3, 4, 5));
         }
@@ -886,7 +886,7 @@ namespace ExtensionMethods.UnitTests
         public void IfForIsCalledWithAnActionOfTAndInt_ItShouldCallThatActionForEveryElementOfTheArray_AndReturnTheArray()
         {
             var list = new List<(int index, TestType value)>();
-            var returned = new TestType[] { new TestType { TestProperty = true } }
+            var returned = new[] { new TestType { TestProperty = true } }
                 .ForAndReturn((element, index) => list.Add((index, element)));
             Assert.IsTrue(list.First().index == 0);
             Assert.IsTrue(list.First().value.TestProperty);
@@ -897,7 +897,7 @@ namespace ExtensionMethods.UnitTests
         public void IfForIsCalledWithAnActionOfTArrayAndInt_ItShouldCallThatActionForEveryElementOfTheArray_AndReturnTheArray()
         {
             var list = new List<int>();
-            var returned = new int[] { 1, 2, 3, 4, 5 }
+            var returned = new[] { 1, 2, 3, 4, 5 }
                 .ForAndReturn((arr, i) => {
                     if (arr.Is(1, 2, 3, 4, 5))
                         list.Add(i);
@@ -909,61 +909,61 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfLeftRotateIsCalledOnAnArray_ItShouldLeftRotateTheArray()
         {
-            var arr = new int[] { 1, 2, 3, 4, 5 };
+            var arr = new[] { 1, 2, 3, 4, 5 };
             arr.LeftRotate();
-            Assert.IsTrue(arr.SequenceEqual(new int[] { 2, 3, 4, 5, 1 }));
+            Assert.IsTrue(arr.SequenceEqual(new[] { 2, 3, 4, 5, 1 }));
         }
 
         [TestMethod]
         public void IfLeftRotateIsCalledOnAnArrayWithTwoElements_ItShouldLeftRotateTheArray()
         {
-            var arr = new int[] { 2, 3 };
+            var arr = new[] { 2, 3 };
             arr.LeftRotate();
-            Assert.IsTrue(arr.SequenceEqual(new int[] { 3, 2 }));
+            Assert.IsTrue(arr.SequenceEqual(new[] { 3, 2 }));
         }
 
         [TestMethod]
         public void IfLeftRotateIsCalledOnAnArrayWithOneElement_ItShouldLeftRotateTheArray()
         {
-            var arr = new int[] { 3 };
+            var arr = new[] { 3 };
             arr.LeftRotate();
-            Assert.IsTrue(arr.SequenceEqual(new int[] { 3 }));
+            Assert.IsTrue(arr.SequenceEqual(new[] { 3 }));
         }
 
         [TestMethod]
         public void IfRightRotateIsCalledOnAnArray_ItShouldRightRotateTheArray()
         {
-            var arr = new int[] { 1, 2, 3, 4, 5 };
+            var arr = new[] { 1, 2, 3, 4, 5 };
             arr.RightRotate();
-            Assert.IsTrue(arr.SequenceEqual(new int[] { 5, 1, 2, 3, 4 }));
+            Assert.IsTrue(arr.SequenceEqual(new[] { 5, 1, 2, 3, 4 }));
         }
 
         [TestMethod]
         public void IfRightRotateIsCalledOnAnArrayWithTwoElements_ItShouldRightRotateTheArray()
         {
-            var arr = new int[] { 2, 3 };
+            var arr = new[] { 2, 3 };
             arr.RightRotate();
-            Assert.IsTrue(arr.SequenceEqual(new int[] { 3, 2 }));
+            Assert.IsTrue(arr.SequenceEqual(new[] { 3, 2 }));
         }
 
         [TestMethod]
         public void IfRightRotateIsCalledOnAnArrayWithOneElement_ItShouldRightRotateTheArray()
         {
-            var arr = new int[] { 3 };
+            var arr = new[] { 3 };
             arr.RightRotate();
-            Assert.IsTrue(arr.SequenceEqual(new int[] { 3 }));
+            Assert.IsTrue(arr.SequenceEqual(new[] { 3 }));
         }
 
         [TestMethod]
         public void IfAllTheSameIsCalledWithAnArrayOfSameElements_ItShouldReturnTrue()
         {
-            Assert.IsTrue(new int[] { 1, 1, 1 }.AreAllTheSame());
+            Assert.IsTrue(new[] { 1, 1, 1 }.AreAllTheSame());
         }
 
         [TestMethod]
         public void IfAllTheSameIsCalledWithAnArrayOfDifferentElements_ItShouldReturnFalse()
         {
-            Assert.IsFalse(new int[] { 1, 2, 3 }.AreAllTheSame());
+            Assert.IsFalse(new[] { 1, 2, 3 }.AreAllTheSame());
         }
 
         [TestMethod]
@@ -1009,7 +1009,7 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfInsertSortedIsCalledWithAnElementLargerThanAllElements_ItShouldAddTheElementAtTheRightPositionOfTheSortedArray()
         {
-            var array = new int[] { 5, 6, 7, 8, 9 };
+            var array = new[] { 5, 6, 7, 8, 9 };
             array = array.InsertSorted(10);
             Assert.AreEqual(6, array.Length);
             Assert.AreEqual(10, array[5]);
@@ -1018,7 +1018,7 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfInsertSortedIsCalledWithAnElement_ItShouldAddTheElementAtTheRightPositionOfTheSortedArray()
         {
-            var array = new int[] { 5, 6, 7, 9, 10 };
+            var array = new[] { 5, 6, 7, 9, 10 };
             array = array.InsertSorted(8);
             Assert.AreEqual(6, array.Length);
             Assert.AreEqual(8, array[3]);
@@ -1035,7 +1035,7 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfFillIsCalledOnAnArray_ItShouldFillTheArrayWithTheProvidedObject()
         {
-            var array = new int[] { 1, 54, 76, 23, 99 };
+            var array = new[] { 1, 54, 76, 23, 99 };
             array.Fill(1);
             var array2 = new int[0];
             array2.Fill(1);
@@ -1046,7 +1046,7 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfChainableFillIsCalledOnAnArray_ItShouldFillTheArrayWithTheProvidedObjectAndReturnTheArray()
         {
-            var array = new int[] { 1, 54, 76, 23, 99 }.ChainableFill(1);
+            var array = new[] { 1, 54, 76, 23, 99 }.ChainableFill(1);
             var array2 = new int[0].ChainableFill(1);
             Assert.IsTrue(array.Is(1, 1, 1, 1, 1));
             Assert.IsTrue(array2.Is());
@@ -1128,14 +1128,14 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfIndexOfIsCalledWithAnObjectThatIsPresentInTheCollection_ItShouldReturnTheCorrectIndex()
         {
-            Assert.AreEqual(1, new int[] { 1, 2, 3, 4, 5 }.IndexOf(2));
-            Assert.AreEqual(4, new int[] { 1, 2, 3, 4, 5 }.IndexOf(5));
+            Assert.AreEqual(1, new[] { 1, 2, 3, 4, 5 }.IndexOf(2));
+            Assert.AreEqual(4, new[] { 1, 2, 3, 4, 5 }.IndexOf(5));
         }
 
         [TestMethod]
         public void IfIndexOfIsCalledWithAnObjectThatIsNotPresentInTheCollection_ItShouldReturnMinusOne()
         {
-            Assert.AreEqual(-1, new int[] { 1, 2, 3, 4, 5 }.IndexOf(99));
+            Assert.AreEqual(-1, new[] { 1, 2, 3, 4, 5 }.IndexOf(99));
         }
 
         [TestMethod]
@@ -1538,26 +1538,26 @@ namespace ExtensionMethods.UnitTests
         [TestMethod]
         public void IfRemoveIsCalledOnAnEnumerable_ItShouldRemoveTheProvidedObjectFromTheEnumerable()
         {
-            Assert.IsTrue(new int[] { 1, 2, 3, 4, 5 }.Remove(1).Is(2, 3, 4, 5));
-            Assert.IsTrue(new int[] { 1, 2, 3, 4, 5 }.Remove(99).Is(1, 2, 3, 4, 5));
+            Assert.IsTrue(new[] { 1, 2, 3, 4, 5 }.Remove(1).Is(2, 3, 4, 5));
+            Assert.IsTrue(new[] { 1, 2, 3, 4, 5 }.Remove(99).Is(1, 2, 3, 4, 5));
             Assert.IsTrue(new int[0].Remove(99).Is());
         }
 
         [TestMethod]
         public void IfBetweenValuesIsCalledOnAnEnumerable_ItShouldReturnAllElementsInTheGivenRange()
         {
-            Assert.IsTrue(new int[] { 1, 2, 3, 4, 5 }.BetweenValues(0, 6).Is(1, 2, 3, 4, 5));
-            Assert.IsTrue(new int[] { 1, 2, 3, 4, 5 }.BetweenValues(1, 5).Is(2, 3, 4));
-            Assert.IsTrue(new int[] { 1, 2, 3, 4, 5 }.BetweenValues(99, 105).Is());
+            Assert.IsTrue(new[] { 1, 2, 3, 4, 5 }.BetweenValues(0, 6).Is(1, 2, 3, 4, 5));
+            Assert.IsTrue(new[] { 1, 2, 3, 4, 5 }.BetweenValues(1, 5).Is(2, 3, 4));
+            Assert.IsTrue(new[] { 1, 2, 3, 4, 5 }.BetweenValues(99, 105).Is());
             Assert.IsTrue(new int[0].BetweenValues(99, 109).Is());
         }
 
         [TestMethod]
         public void IfBetweenValuesInclusiveIsCalledOnAnEnumerable_ItShouldReturnAllElementsInTheGivenRange()
         {
-            Assert.IsTrue(new int[] { 1, 2, 3, 4, 5 }.BetweenValuesInclusive(1, 5).Is(1, 2, 3, 4, 5));
-            Assert.IsTrue(new int[] { 1, 2, 3, 4, 5 }.BetweenValuesInclusive(2, 3).Is(2, 3));
-            Assert.IsTrue(new int[] { 1, 2, 3, 4, 5 }.BetweenValuesInclusive(99, 105).Is());
+            Assert.IsTrue(new[] { 1, 2, 3, 4, 5 }.BetweenValuesInclusive(1, 5).Is(1, 2, 3, 4, 5));
+            Assert.IsTrue(new[] { 1, 2, 3, 4, 5 }.BetweenValuesInclusive(2, 3).Is(2, 3));
+            Assert.IsTrue(new[] { 1, 2, 3, 4, 5 }.BetweenValuesInclusive(99, 105).Is());
             Assert.IsTrue(new int[0].BetweenValuesInclusive(99, 109).Is());
         }
 
@@ -1727,7 +1727,7 @@ namespace ExtensionMethods.UnitTests
         }
 
         [TestMethod]
-        public void IfTryAddIsCalledWithAValueTupleThatDoesExistInTheDictionary_ItShouldReturnfalse()
+        public void IfTryAddIsCalledWithAValueTupleThatDoesExistInTheDictionary_ItShouldReturnFalse()
         {
             var dict = TestDictionary;
             Assert.IsFalse(dict.TryAdd((0, "1")));
@@ -1765,7 +1765,6 @@ namespace ExtensionMethods.UnitTests
         };
 
         private class DictionaryToListClass {
-            public DictionaryToListClass() { }
             public string StringAutoProperty1 { get; set; }
             public string StringAutoProperty2 { get; set; }
         }
@@ -1889,40 +1888,29 @@ namespace ExtensionMethods.UnitTests
             EnumValue2 
         }
 
-        private enum BlankEnum { }
-
         [Serializable]
         private class TestType : IComparable<TestType>
         {
-            public TestType() { }
-
-            public bool TestProperty { get; set; } = false;
+            public bool TestProperty { get; set; }
 
             public int CompareTo(TestType other) => TestProperty.CompareTo(other.TestProperty);
         }
 
-        private class TestTypeNonSerializable
+        private class TestTypeNonSerializable : IComparable<TestType>
         {
-            public TestTypeNonSerializable() { }
-
-            public bool TestProperty { get; set; } = false;
+            private bool TestProperty { get; } = false;
 
             public int CompareTo(TestType other) => TestProperty.CompareTo(other.TestProperty);
         }
 
         private class CountReferenceClass
         {
-            public CountReferenceClass() { }
-
             public void Increment() => Count++;
 
-            public int Count { get; set; } = 0;
+            public int Count { get; private set; }
         }
 
-        private class TestType2
-        {
-            public TestType2() { }
-        }
+        private class TestType2 { }
 
         private class ComparerClass<T> : IComparer<T> where T: IComparable<T>
         {
@@ -1932,7 +1920,8 @@ namespace ExtensionMethods.UnitTests
         private class DisposableTestType : IDisposable
         {
             public void Dispose() => HasBeenDisposed = true;
-            public bool HasBeenDisposed { get; set; } = false;
+
+            public bool HasBeenDisposed { get; private set; }
         }
     }
 }
