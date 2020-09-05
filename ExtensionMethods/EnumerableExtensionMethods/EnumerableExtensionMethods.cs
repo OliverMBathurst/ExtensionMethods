@@ -2,11 +2,9 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using ExtensionMethods.Classes;
 using ExtensionMethods.GenericExtensionMethods;
 using ExtensionMethods.ListExtensionMethods;
 using ExtensionMethods.ArrayExtensionMethods;
-
 
 namespace ExtensionMethods.EnumerableExtensionMethods
 {
@@ -167,15 +165,6 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             return -1;
         }
 
-        public static bool Is<T>(this IEnumerable<T> enumerable, params T[] args) where T : IComparable<T>
-        {
-            if (enumerable.Count() != args.Length)
-                return false;
-
-            var iterable = new ConcurrentIterable<T, T>(enumerable.ToArray(), args).AsEnumerable();
-            return iterable.All(tuple => tuple.Item1.CompareTo(tuple.Item2) == 0);
-        }
-
         public static IEnumerable<T> Replace<T>(this IEnumerable<T> enumerable, T itemToReplace, T replacementItem) where T : IComparable<T>
         {
             var array = enumerable.ToArray();
@@ -231,6 +220,24 @@ namespace ExtensionMethods.EnumerableExtensionMethods
             });
 
             return masterList;
+        }
+
+        public static bool Is<T>(this IEnumerable<T> enumerable, params T[] args) where T : IComparable<T>
+        {
+            if (enumerable.Count() != args.Length)
+                return false;
+
+            var result = true;
+            for (var i = 0; i < enumerable.Count(); i++)
+            {
+                if(enumerable.ElementAt(i).CompareTo(args[i]) != 0)
+                {
+                    result = false;
+                    break;
+                }
+            }
+
+            return result;
         }
 
         [ExcludeFromCodeCoverage]

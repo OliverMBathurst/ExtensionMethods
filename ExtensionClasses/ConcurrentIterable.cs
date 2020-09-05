@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace ExtensionMethods.Classes
+namespace ExtensionMethods
 {
     public class ConcurrentIterable<T, T2>
     {

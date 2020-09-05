@@ -529,22 +529,6 @@ namespace ExtensionMethods.UnitTests
 
         #endregion
 
-        #region EnumExtensionMethods
-        [TestMethod]
-        public void WhenToDictionaryIsCalledWithAnEnumType_ItShouldReturnADictionaryOfAllEnumValues()
-        {
-            var result = EnumExtensionMethods.EnumExtensionMethods.ToDictionary<TestEnum>();
-            Assert.IsTrue(result["EnumValue1"] == TestEnum.EnumValue1);
-            Assert.IsTrue(result["EnumValue2"] == TestEnum.EnumValue2);
-        }
-
-        [TestMethod]
-        public void WhenToDictionaryIsCalledWithANonEnumType_ItShouldReturnAnEmptyDictionary()
-        {
-            Assert.IsTrue(EnumExtensionMethods.EnumExtensionMethods.ToDictionary<int>().IsEmpty());
-        }
-        #endregion
-
         #region ListExtensionMethods
         [TestMethod]
         public void IfForIsCalledWithAnActionOfT_ItShouldCallThatActionForEveryElementOfTheList()
