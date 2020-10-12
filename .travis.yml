@@ -1,5 +1,5 @@
 language: csharp
-solution: ExtensionMethods.sln
+solution: ./ExtensionMethods/ExtensionMethods.sln
 dotnet: 3.1.402
 script:
  - cd ExtensionMethods
