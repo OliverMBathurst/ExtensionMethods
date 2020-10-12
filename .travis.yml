@@ -1,7 +1,7 @@
 dist: xenial
 language: csharp
 solution: ./ExtensionMethods/ExtensionMethods.sln
-dotnet: 2.1.0
+dotnet: 2.1.810
 script:
  - cd ExtensionMethods
  - dotnet restore
