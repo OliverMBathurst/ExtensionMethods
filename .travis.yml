@@ -6,4 +6,4 @@ script:
  - cd ExtensionMethods
  - dotnet restore
  - dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
- - ..\ExtensionMethods.UnitTests\packages\coveralls.net\0.7.0\tools\csmacnz.Coveralls.exe --opencover -i ..\ExtensionMethods.UnitTests\coverage.opencover.xml --useRelativePaths
+ - ../ExtensionMethods.UnitTests/packages/coveralls.net/0.7.0/tools/csmacnz.Coveralls.exe --opencover -i ../ExtensionMethods.UnitTests/coverage.opencover.xml --useRelativePaths
