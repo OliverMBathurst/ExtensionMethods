@@ -1,3 +1,4 @@
+dist: xenial
 language: csharp
 solution: ./ExtensionMethods/ExtensionMethods.sln
 dotnet: 2.1.0
