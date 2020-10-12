@@ -2,15 +2,15 @@
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ExtensionMethods.StringExtensionMethods;
-using ExtensionMethods.GenericExtensionMethods;
-using ExtensionMethods.EnumerableExtensionMethods;
-using ExtensionMethods.BooleanExtensionMethods;
 using ExtensionMethods.ListExtensionMethods;
+using ExtensionMethods.EnumerableExtensionMethods;
 using ExtensionMethods.ArrayExtensionMethods;
-using ExtensionMethods.RandomExtensionMethods;
 using ExtensionMethods.IntegerExtensionMethods;
+using ExtensionMethods.RandomExtensionMethods;
+using ExtensionMethods.GenericExtensionMethods;
 using ExtensionMethods.DictionaryExtensionMethods;
+using ExtensionMethods.BooleanExtensionMethods;
+using ExtensionMethods.StringExtensionMethods;
 using ExtensionMethods.CharExtensionMethods;
 
 namespace ExtensionMethods.UnitTests

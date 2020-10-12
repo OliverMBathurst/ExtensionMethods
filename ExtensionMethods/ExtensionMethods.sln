@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29411.108
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtensionMethods", "ExtensionMethods.csproj", "{0FDAEA09-DC8E-4200-8618-AF39AE1A2F5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionMethods.UnitTests", "..\UnitTests\ExtensionMethods.UnitTests.csproj", "{D0587A31-C6B8-4CBF-AE0C-BFC1C9F74208}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionMethods.UnitTests", "..\ExtensionMethods.UnitTests\ExtensionMethods.UnitTests.csproj", "{D0587A31-C6B8-4CBF-AE0C-BFC1C9F74208}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionClasses", "..\ExtensionClasses\ExtensionClasses.csproj", "{E8DD0D37-CDA2-441D-9CF5-B3A817DDDADD}"
 EndProject
