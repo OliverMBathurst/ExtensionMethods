@@ -346,3 +346,12 @@ ExtensionMethods.UnitTests/bin/Release/Microsoft.VisualStudio.TestPlatform.TestF
 ExtensionMethods.UnitTests/bin/Release/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.xml
 ExtensionMethods.UnitTests/bin/Release/Microsoft.VisualStudio.TestPlatform.TestFramework.xml
 ExtensionMethods/bin/Release/netstandard2.0/ExtensionMethods.deps.json
+ExtensionMethods.UnitTests/System.Net.Http.Primitives.dll
+ExtensionMethods.UnitTests/System.Net.Http.Extensions.dll
+ExtensionMethods.UnitTests/Newtonsoft.Json.dll
+ExtensionMethods.UnitTests/DocoptNet.dll
+ExtensionMethods.UnitTests/csmacnz.Coveralls.exe.config
+ExtensionMethods.UnitTests/csmacnz.Coveralls.exe
+ExtensionMethods.UnitTests/coverage.opencover.xml
+ExtensionMethods.UnitTests/Beefeater.dll
+ExtensionMethods.UnitTests/BCLExtensions.dll

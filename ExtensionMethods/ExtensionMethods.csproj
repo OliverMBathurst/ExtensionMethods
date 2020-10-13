@@ -19,7 +19,4 @@
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="powershell.exe -ExecutionPolicy Bypass -NoProfile -File &quot;../AfterBuild.ps1&quot;" />
-  </Target>
 </Project>
